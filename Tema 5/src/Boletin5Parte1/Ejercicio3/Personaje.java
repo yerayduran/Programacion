@@ -75,9 +75,9 @@ public abstract class Personaje implements Comparable<Personaje> {
 
     @Override
     public String toString() {
-        return "\nBoletin5Parte1.Ejercicio3.Personaje {" +
+        return "\nPersonaje {" +
                 "Nombre = '" + nombre + '\'' +
-                ", Boletin5Parte1.Ejercicio3.Raza = " + raza +
+                ", Raza = " + raza +
                 ", Fuerza = " + fuerza +
                 ", Inteligencia = " + inteligencia +
                 ", ptsMax = " + ptsMax +

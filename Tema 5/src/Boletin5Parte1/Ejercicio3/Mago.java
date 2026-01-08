@@ -67,7 +67,7 @@ public class Mago extends Personaje {
                 hechizos[i] = null;
 
                 if(victima.getPtsActual() > 10){
-                    victima.setPtsActual(victima.getPtsActual() - 10);
+                    victima.setPtsActual(victima.getPtsActual() - getFuerza());
                 } else {
                     victima.setPtsActual(0);
                     System.out.println("Tu Enemigo ha muerto");
@@ -81,6 +81,6 @@ public class Mago extends Personaje {
 
     @Override
     public String toString() {
-        return "Boletin5Parte1.Ejercicio3.Mago {" + "Hechizos = " + Arrays.toString(hechizos) + "} " + super.toString();
+        return "Mago {" + "Hechizos = " + Arrays.toString(hechizos) + "} " + super.toString();
     }
 }

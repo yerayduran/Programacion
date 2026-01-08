@@ -26,6 +26,10 @@ public abstract class FicheroTexto extends PC implements ILeible{
     }
 
     public String leer(){
-
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < parrafos.length; i++) {
+            sb.append(parrafos[i]);
+        }
+        return sb.toString();
     }
 }
