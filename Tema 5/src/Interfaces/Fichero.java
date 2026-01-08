@@ -2,12 +2,12 @@ package Interfaces;
 
 import java.time.LocalDate;
 
-public abstract class PC {
+public abstract class Fichero {
 
     private String nombre;
     private LocalDate fechaDeCreacion;
 
-    public PC(String nombre) {
+    public Fichero(String nombre) {
         this.nombre = nombre;
         this.fechaDeCreacion = LocalDate.now();
     }
@@ -30,5 +30,11 @@ public abstract class PC {
 
     public abstract long getTamaño();
 
-
+    @Override
+    public final String toString() {
+        return "Fichero {" +
+                "Nombre = '" + nombre + '\'' +
+                ", Fecha de Creacion=" + fechaDeCreacion + ", Tamaño = " + getTamaño() +
+                '}';
+    }
 }

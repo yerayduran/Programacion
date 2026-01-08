@@ -1,6 +1,6 @@
 package Interfaces;
 
-public abstract class FicheroTexto extends PC implements ILeible{
+public abstract class FicheroTexto extends Fichero implements ILeible{
 
     private String[] parrafos;
 
