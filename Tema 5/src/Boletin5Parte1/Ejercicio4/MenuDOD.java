@@ -4,7 +4,6 @@ import Boletin5Parte1.Ejercicio3.Clerigo;
 import Boletin5Parte1.Ejercicio3.Mago;
 import Boletin5Parte1.Ejercicio3.Personaje;
 import Boletin5Parte1.Ejercicio3.Raza;
-import Boletin5Parte1.Ejercicio3.*;
 import Boletin5Parte1.Ejercicio3.Exception.PersonajeException;
 
 import java.util.Arrays;
@@ -20,12 +19,12 @@ public class MenuDOD {
 
         do{
             try {
-                String[] opciones = {"Alta de personaje", "Boletin5Parte1.Ejercicio3.Mago aprende hechizo", "Boletin5Parte1.Ejercicio3.Mago lanza hechizo", "Clérigo cura al mago", "Mostrar el listado de personajes", "Mostrar el listado de personajes ordenados por puntos actuales de mayor a menor", "Salir"};
+                String[] opciones = {"Añadir personaje", "Mago aprende hechizo", "Mago lanza hechizo", "Clérigo cura al mago", "Mostrar el listado de personajes", "Mostrar el listado de personajes ordenados por puntos actuales de mayor a menor", "Salir"};
                 opcion = MiEntradaSalida.seleccionarOpcion("Elija una opción: ", opciones);
                 switch (opcion) {
                     case 1:
-                        String[] opciones2 = {"Boletin5Parte1.Ejercicio3.Mago", "Clérigo"};
-                        int opcion2 = MiEntradaSalida.seleccionarOpcion("Elija un tipo de Boletin5Parte1.Ejercicio3.Personaje: ", opciones2);
+                        String[] opciones2 = {"Mago", "Clérigo"};
+                        int opcion2 = MiEntradaSalida.seleccionarOpcion("Elija un tipo de Personaje: ", opciones2);
 
                         switch (opcion2) {
                             case 1:
@@ -41,16 +40,15 @@ public class MenuDOD {
                                 break;
 
                             case 2:
-                                String nombreClerigo = MiEntradaSalida.solicitarCadena("Introduce el nombre del clérigo");
-                                String razaClerigoSt = MiEntradaSalida.solicitarCadena("Introduce la raza");
+                                String nombreClerigo = MiEntradaSalida.solicitarCadena("Introduce el nombre del clérigo: ");
+                                String razaClerigoSt = MiEntradaSalida.solicitarCadena("Introduce la raza: ");
                                 Raza razaClerigo = Raza.valueOf(razaClerigoSt.toUpperCase());
-                                int fuerzaClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la fuerza");
-                                int inteligenciaClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la inteligencia");
-                                int ptsMaxClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la vida máxima");
+                                int fuerzaClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la fuerza: ");
+                                int inteligenciaClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la inteligencia: ");
+                                int ptsMaxClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la vida máxima: ");
                                 int ptsActualClerigo = MiEntradaSalida.solicitarEnteroPositivo("Introduce la vida actual");
-                                String nombreDios = MiEntradaSalida.solicitarCadena("Introduce el nombre del dios");
-                                Clerigo clerigo = new Clerigo(nombreClerigo, razaClerigo, fuerzaClerigo, inteligenciaClerigo,
-                                        ptsMaxClerigo, ptsActualClerigo, nombreDios);
+                                String nombreDios = MiEntradaSalida.solicitarCadena("Introduce el nombre del dios: ");
+                                Clerigo clerigo = new Clerigo(nombreClerigo, razaClerigo, fuerzaClerigo, inteligenciaClerigo, ptsMaxClerigo, ptsActualClerigo, nombreDios);
                                 darAlta(clerigo);
                                 break;
 
@@ -63,26 +61,26 @@ public class MenuDOD {
                     case 2:
                         Mago[] magos = crearListaMagos();
                         mostrarMenuMago(magos);
-                        int indice = MiEntradaSalida.solicitarEnteroPositivo("Elija una opción");
+                        int indice = MiEntradaSalida.solicitarEnteroPositivo("Elija una opción: ");
 
                         if (indice >= magos.length) {
                             System.out.println("Has seleccionado una opción que no es válida");
 
                         } else {
-                            String hechizo = MiEntradaSalida.solicitarCadena("Introduce el nombre del hechizo");
+                            String hechizo = MiEntradaSalida.solicitarCadena("Introduce el nombre del hechizo: ");
                             magos[indice].aprendeHechizo(hechizo);
                         }
                         break;
 
                     case 3:
-                        String nombreMagoABuscar = MiEntradaSalida.solicitarCadena("Introduce el nombre del personaje a buscar");
+                        String nombreMagoABuscar = MiEntradaSalida.solicitarCadena("Introduce el nombre del personaje a buscar: ");
                         Mago magoABuscar = new Mago(nombreMagoABuscar, Raza.HUMANO, 14, 18, 60, 45);
 
                         if (personajes[buscarPersonajes(magoABuscar)] instanceof Mago) {
                             Mago magoEncontrado = (Mago) personajes[buscarPersonajes(magoABuscar)];
-                            String victimaNombre = MiEntradaSalida.solicitarCadena("Introduce el nombre de la víctima");
+                            String victimaNombre = MiEntradaSalida.solicitarCadena("Introduce el nombre de la víctim: ");
                             Mago victima = new Mago(victimaNombre, Raza.HUMANO, 14, 18, 60, 45);
-                            String nombreHechizo = MiEntradaSalida.solicitarCadena("Introduce el nombre del hechizo");
+                            String nombreHechizo = MiEntradaSalida.solicitarCadena("Introduce el nombre del hechizo: ");
                             magoEncontrado.lanzarHechizo(personajes[buscarPersonajes(victima)], nombreHechizo);
                         } else {
                             System.out.println("No puedes lanzar un hechizo");
@@ -92,13 +90,13 @@ public class MenuDOD {
                     case 4:
                         Clerigo[] clerigos = crearListaClerigos();
                         mostrarMenuClerigo(clerigos);
-                        int indice2 = MiEntradaSalida.solicitarEnteroPositivo("Elija una opción");
+                        int indice2 = MiEntradaSalida.solicitarEnteroPositivo("Elija una opción: ");
 
                         if (indice2 >= clerigos.length) {
                             System.out.println("Has seleccionado una opción que no es válida");
 
                         } else {
-                            String nombrePersonaje = MiEntradaSalida.solicitarCadena("Introduce el nombre del personaje");
+                            String nombrePersonaje = MiEntradaSalida.solicitarCadena("Introduce el nombre del personaje: ");
                             Mago personajeABuscar = new Mago(nombrePersonaje, Raza.HUMANO, 14, 18, 60, 45);
                             clerigos[indice2].curar(personajes[buscarPersonajes(personajeABuscar)]);
                         }

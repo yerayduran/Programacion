@@ -36,6 +36,7 @@ public class DoD {
             System.out.println("------------------------------------------------------------------------------------------------------- ");
 
         } catch (PersonajeException e) {
-            System.out.println(e.getMessage());        }
+            System.out.println(e.getMessage());
+        }
     }
 }

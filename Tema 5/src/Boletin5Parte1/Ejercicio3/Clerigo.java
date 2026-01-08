@@ -43,6 +43,6 @@ public class Clerigo extends Personaje {
 
     @Override
     public String toString() {
-        return "Boletin5Parte1.Ejercicio3.Clerigo {" + " Dios que le reza = '" + nombreDeDios + '\'' + "} " + super.toString();
+        return "Clerigo {" + " Dios que le reza = '" + nombreDeDios + '\'' + "} " + super.toString();
     }
 }
