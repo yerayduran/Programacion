@@ -1,6 +1,6 @@
 package Interfaces;
 
-public abstract class FicheroBinario extends PC implements ILeible{
+public abstract class FicheroBinario extends Fichero implements ILeible{
 
     private Byte[] bytes;
 
