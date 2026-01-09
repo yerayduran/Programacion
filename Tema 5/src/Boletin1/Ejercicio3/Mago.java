@@ -49,7 +49,7 @@ public class Mago extends Personaje {
         if (!sonIgual && hayEspacio != -1) {
             hechizos[hayEspacio] = hechizo;
         } else {
-            throw new PersonajeException("El Boletin5Parte1.Ejercicio3.Mago no puede aprender este hechizo");
+            throw new PersonajeException("El Mago no puede aprender este hechizo");
         }
     }
 
