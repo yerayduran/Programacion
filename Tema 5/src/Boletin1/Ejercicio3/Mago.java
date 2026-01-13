@@ -66,7 +66,7 @@ public class Mago extends Personaje {
                 hechizoEncontrado = true;
                 hechizos[i] = null;
 
-                if(victima.getPtsActual() > 10){
+                if(victima.getPtsActual() > getFuerza()){
                     victima.setPtsActual(victima.getPtsActual() - getFuerza());
                 } else {
                     victima.setPtsActual(0);
