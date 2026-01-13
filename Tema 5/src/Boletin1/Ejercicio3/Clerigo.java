@@ -22,7 +22,7 @@ public class Clerigo extends Personaje {
 
     public void setInteligencia(int inteligencia) throws PersonajeException {
         if (inteligencia <= 12 || inteligencia >= 16) {
-            throw new PersonajeException("Inteligencia debe ser entre los parametros 13-15 ");
+            throw new PersonajeException("Inteligencia debe ser entre los parametros 13-15");
         }
         super.setInteligencia(inteligencia);
     }
@@ -33,8 +33,11 @@ public class Clerigo extends Personaje {
             throw new PersonajeException("No te puedes curar a ti mismo");
         }
         if (personaje.getPtsActual() < personaje.getPtsMax()) {
-            personaje.setPtsActual(personaje.getPtsActual() + 10);
-
+            if(personaje.getPtsActual() + 10 <= personaje.getPtsMax()) {
+                personaje.setPtsActual(personaje.getPtsActual() + 10);
+            }else {
+                personaje.setPtsActual(personaje.getPtsMax());
+            }
         } else {
             personaje.setPtsActual(personaje.getPtsMax());
             throw new PersonajeException("No te puedes curar, estás al máximo");
