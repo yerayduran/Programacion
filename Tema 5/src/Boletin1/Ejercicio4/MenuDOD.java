@@ -78,7 +78,7 @@ public class MenuDOD {
 
                         if (personajes[buscarPersonajes(magoABuscar)] instanceof Mago) {
                             Mago magoEncontrado = (Mago) personajes[buscarPersonajes(magoABuscar)];
-                            String victimaNombre = MiEntradaSalida.solicitarCadena("Introduce el nombre de la víctim: ");
+                            String victimaNombre = MiEntradaSalida.solicitarCadena("Introduce el nombre de la víctima: ");
                             Mago victima = new Mago(victimaNombre, Raza.HUMANO, 14, 18, 60, 45);
                             String nombreHechizo = MiEntradaSalida.solicitarCadena("Introduce el nombre del hechizo: ");
                             magoEncontrado.lanzarHechizo(personajes[buscarPersonajes(victima)], nombreHechizo);
