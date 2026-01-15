@@ -185,14 +185,14 @@ public class MenuDOD {
         int contadorMagos = 0;
         Mago[] magos = new Mago[MAX_PERSONAJES];
 
-        for (int i = 0; i < personajes.length; i++) {
+        for (int i = 0; i <= personajes.length; i++) {
             // Si personaje en la posición i es una isntancia 'Boletin5Parte1.Ejercicio3.Mago' lo guardamos en el nuevo array
             if (personajes[i] instanceof Mago) {
                 magos[contadorMagos++] = (Mago) personajes[i];
             }
         }
         // Devuelve el array de magos con las posiciones que tienen magos, sin posiciones null
-        return Arrays.copyOfRange(magos, 0, contadorMagos);
+        return Arrays.copyOfRange(magos, 1, contadorMagos);
     }
 
     // Hacemos un método para crear un array exclusivamente de clérigos
