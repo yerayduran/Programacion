@@ -9,26 +9,51 @@ import Pokemon2023.exceptions.ValorNoValidoException;
 import Pokemon2023.exceptions.MuerteException;
 import Pokemon2023.enums.*;
 
+/**
+ * Clase principal del programa. Gestiona la simulación completa del combate Pokémon:
+ * <ul>
+ *     <li>Generación aleatoria de Pokémon.</li>
+ *     <li>Selección de clima por ronda.</li>
+ *     <li>Aplicación de efectos climáticos.</li>
+ *     <li>Turnos de ataque entre Pokémon.</li>
+ *     <li>Detección del ganador.</li>
+ * </ul>
+ *
+ * El combate continúa hasta que solo queda un Pokémon vivo (excluyendo los divinos).
+ */
 public class Main {
+
+    /**
+     * Método principal que inicia la simulación del combate Pokémon.
+     *
+     * @param args Argumentos de línea de comandos (no utilizados).
+     */
     public static void main(String[] args) {
+
         Pokemon[] pokemons = new Pokemon[6];
+
+        // Generación aleatoria de los 6 Pokémon
         for (int i = 0; i < pokemons.length; i++) {
             pokemons[i] = generateRandomPokemon();
         }
 
+        // Mostrar los Pokémon seleccionados
         System.out.println("Los pokemons que han sido seleccionados son:");
         for (Pokemon pokemon : pokemons) {
             System.out.println(pokemon.getNombre() + " - " + pokemon.getClass().getSimpleName() + " - " + pokemon.getPuntosSalud() + " puntos de salud");
         }
 
-        while (!hayGanador(pokemons)){
+        // Bucle principal del combate
+        while (!hayGanador(pokemons)) {
+
             WeatherCondition weatherCondition = generateRandomWeatherCondition();
+
             System.out.println();
             System.out.println("##################################################");
             System.out.println("##################################################");
             System.out.println("El clima en esta ronda es " + weatherCondition);
 
-            // Mostramos los mensajes de inicio de ronda, si los hubiera
+            // Efectos de inicio de ronda
             for (Pokemon pokemon : pokemons) {
                 try {
                     pokemon.roundStart(weatherCondition);
@@ -37,24 +62,29 @@ public class Main {
                 }
             }
 
-            /*
-            Iremos por turnos, dejando que el pokemon que ocupe la posición que le toca pueda seleccionar otro pokemon
-            para atacar
-             */
+            // Turnos de ataque
             for (int i = 0; i < pokemons.length; i++) {
-                Pokemon pokemon = pokemons[i];
 
-                if (pokemon.estaVivo()) {
+                Pokemon atacante = pokemons[i];
+
+                if (atacante.estaVivo()) {
+
                     System.out.println();
-                    System.out.println("Es el turno de " + pokemon.getNombre());
+                    System.out.println("Es el turno de " + atacante.getNombre());
 
-                    Atacable atacable = seleccionaPokemonAtacable(pokemons, i);
+                    Atacable objetivo = seleccionaPokemonAtacable(pokemons, i);
+
                     try {
-                        pokemon.atacar(atacable, weatherCondition);
-                        System.out.println(pokemon.getNombre() + " ha atacado a " + ((Pokemon) atacable).getNombre() + " - " + ((Pokemon) atacable).getPuntosSalud() + " puntos de salud");
+                        atacante.atacar(objetivo, weatherCondition);
+
+                        Pokemon objetivoPokemon = (Pokemon) objetivo;
+
+                        System.out.println(atacante.getNombre() + " ha atacado a " + objetivoPokemon.getNombre() + " - " + objetivoPokemon.getPuntosSalud() + " puntos de salud"
+                        );
+
                     } catch (MuerteException e) {
                         System.out.println(e.getMessage());
-                        if (hayGanador(pokemons)){
+                        if (hayGanador(pokemons)) {
                             break;
                         }
                     }
@@ -63,110 +93,122 @@ public class Main {
         }
 
         System.out.println("El ganador es " + getGanador(pokemons).getNombre());
-
     }
 
+    /**
+     * Obtiene el Pokémon ganador, es decir, el único que sigue vivo
+     * y que no es de tipo {@link PokemonDivino}.
+     *
+     * @param pokemons Array de Pokémon participantes.
+     * @return El Pokémon ganador, o null si no se encuentra.
+     */
     private static Pokemon getGanador(Pokemon[] pokemons) {
         for (Pokemon pokemon : pokemons) {
-            if (pokemon.estaVivo()){
+            if (pokemon.estaVivo() && !(pokemon instanceof PokemonDivino)) {
                 return pokemon;
             }
         }
         return null;
     }
 
-    private static Atacable seleccionaPokemonAtacable(Pokemon[] pokemons, int i) {
-        // Mostramos todos los pokemons que están vivos y que no son él mismo
+    /**
+     * Permite seleccionar un objetivo válido para atacar.
+     * Muestra los Pokémon rivales vivos y permite elegir uno.
+     *
+     * @param pokemons Array de Pokémon participantes.
+     * @param indiceAtacante Índice del Pokémon que está atacando.
+     * @return El Pokémon objetivo seleccionado.
+     */
+    private static Atacable seleccionaPokemonAtacable(Pokemon[] pokemons, int indiceAtacante) {
+
         System.out.println("Estos son tus rivales:");
-        int numPokemonVivos = 0;
 
         ArrayList<Atacable> atacables = new ArrayList<>();
+        int contador = 0;
 
         for (int j = 0; j < pokemons.length; j++) {
-            // TODO: comprobar que el pokemon está vivo, que no es él mismo y que puede ser atacado
-            if (){
-                System.out.println((numPokemonVivos + 1) + ": " + pokemons[j].getNombre() + " - " + pokemons[j].getClass().getSimpleName() + " - " + pokemons[j].getPuntosSalud() + " puntos de salud");
-                numPokemonVivos++;
+            if (j != indiceAtacante && pokemons[j].estaVivo() && pokemons[j] instanceof Atacable) {
+
+                contador++;
+                System.out.println(contador + ": " + pokemons[j].getNombre() + " - " + pokemons[j].getClass().getSimpleName() + " - " + pokemons[j].getPuntosSalud() + " puntos de salud"
+                );
+
                 atacables.add((Atacable) pokemons[j]);
             }
         }
 
-        int enteroIntroducido = UserDataCollector.getEnteroMinMax("Selecciona un pokemon para atacar", 1, numPokemonVivos);
+        int opcion = UserDataCollector.getEnteroMinMax("Selecciona un pokemon para atacar", 1, contador);
 
-        return atacables.get(enteroIntroducido - 1);
-    }
-
-    private static boolean hayGanador(Pokemon[] pokemons){
-        int contador = 0;
-        for (int i = 0; i < pokemons.length; i++) {
-            if (pokemons[i].getPuntosSalud() > 0){
-                contador++;
-            }
-        }
-        return contador == 1;
+        return atacables.get(opcion - 1);
     }
 
     /**
-     * Genera un pokemon de tipo aleatorio entre PokemonAgua, PokemonFuego, PokemonElectrico y PokemonTierra. Los datos
-     * de ataque, defensa y puntos de salud son aleatorios:
-     * - puntos de salud entre 50 y 100
-     * - ataque entre 5 y 15
-     * - defensa entre 5 y 25
+     * Determina si ya existe un ganador.
+     * Un ganador existe cuando solo queda un Pokémon vivo (no divino).
      *
-     * Hay que tener en cuenta que cada una de estas clases tiene diferentes parámetros en su constructor.
-     *
-     * @return Pokemon generado
+     * @param pokemons Array de Pokémon participantes.
+     * @return true si hay un ganador, false en caso contrario.
      */
-    private static Pokemon generateRandomPokemon(){
-        int random = (int) (Math.random() * 5);
-        boolean added = false;
+    private static boolean hayGanador(Pokemon[] pokemons) {
+        int vivos = 0;
 
-        while (!added){
-            try {
-                switch (random) {
-                    case 0:
-                        return new PokemonAgua(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 11 + 10));
-                    case 1:
-                        return new PokemonFuego(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 6 + 5));
-                    case 2:
-                        return new PokemonElectrico(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 6 + 10));
-                    case 3:
-                        return new PokemonTierra(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 9 + 1));
-                    case 4:
-                        return new PokemonDivino(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5));
-                    default:
-                        return null;
-                }
+        for (Pokemon pokemon : pokemons) {
+            if (!(pokemon instanceof PokemonDivino) && pokemon.estaVivo()) {
+                vivos++;
             }
-            catch (ValorNoValidoException e) {
-                // No hacemos nada
-            }
-            added = true;
         }
 
-        // Nunca llegará aquí
-        return null;
-
+        return vivos == 1;
     }
 
     /**
-     * Genera un nombre de pokemon aleatorio entre 50 nombres predefinidos
-     * @return Nombre de pokemon aleatorio
+     * Genera un Pokémon aleatorio de cualquier tipo disponible.
+     * Si algún valor aleatorio no es válido, reintenta automáticamente.
+     *
+     * @return Un Pokémon generado aleatoriamente.
+     */
+    private static Pokemon generateRandomPokemon() {
+
+        while (true) {
+            try {
+                int random = (int) (Math.random() * 5);
+
+                return switch (random) {
+                    case 0 -> new PokemonAgua(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 11 + 10)
+                    );
+                    case 1 -> new PokemonFuego(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 6 + 5)
+                    );
+                    case 2 -> new PokemonElectrico(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 6 + 10)
+                    );
+                    case 3 -> new PokemonTierra(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5), (int) (Math.random() * 9 + 1)
+                    );
+                    case 4 -> new PokemonDivino(generaNombrePokemonAleatorio(), (int) (Math.random() * 51 + 50), (int) (Math.random() * 11 + 5), (int) (Math.random() * 21 + 5)
+                    );
+                    default -> null;
+                };
+
+            } catch (ValorNoValidoException e) {
+            }
+        }
+    }
+
+    /**
+     * Genera un nombre aleatorio para un Pokémon a partir de una lista predefinida.
+     *
+     * @return Un nombre aleatorio.
      */
     private static String generaNombrePokemonAleatorio() {
         String[] nombres = {"Pikachu", "Charmander", "Squirtle", "Bulbasaur", "Jigglypuff", "Meowth", "Psyduck", "Vulpix", "Gengar", "Gyarados", "Lapras", "Eevee", "Snorlax", "Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew", "Chikorita", "Cyndaquil", "Totodile", "Togepi", "Ampharos", "Bellossom", "Marill", "Sudowoodo", "Unown", "Wobbuffet", "Girafarig", "Pineco", "Dunsparce", "Gligar", "Steelix", "Snubbull", "Qwilfish", "Scizor", "Shuckle", "Heracross", "Sneasel", "Teddiursa", "Ursaring", "Slugma", "Swinub", "Corsola", "Remoraid", "Delibird", "Mantine", "Skarmory", "Houndour", "Phanpy"};
         return nombres[(int) (Math.random() * nombres.length)];
     }
 
-    private static WeatherCondition generateRandomWeatherCondition(){
+    /**
+     * Genera una condición climática aleatoria para la ronda.
+     *
+     * @return Una condición climática aleatoria.
+     */
+    private static WeatherCondition generateRandomWeatherCondition() {
         int random = (int) (Math.random() * 4);
-        return switch (random) {
-            //Devolver un valor de WeatherCondition
-            case 0 -> WeatherCondition.LLUVIA;
-            case 1 -> WeatherCondition.SOL;
-            case 2 -> WeatherCondition.TORMENTA_ELECTRICA;
-            case 3 -> WeatherCondition.TORMENTA_DE_ARENA;
-            default -> null;
-        };
+        return WeatherCondition.values()[random];
     }
 }
