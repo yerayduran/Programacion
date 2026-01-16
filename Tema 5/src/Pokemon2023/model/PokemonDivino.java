@@ -28,8 +28,7 @@ public class PokemonDivino extends Pokemon {
      * @param defensa Defensa base.
      * @throws ValorNoValidoException Si ataque o defensa están fuera de los rangos permitidos.
      */
-    public PokemonDivino(String nombre, int puntosSalud, int puntosAtaque, int defensa)
-            throws ValorNoValidoException {
+    public PokemonDivino(String nombre, int puntosSalud, int puntosAtaque, int defensa) throws ValorNoValidoException {
         super(nombre, puntosSalud, puntosAtaque, defensa);
     }
 

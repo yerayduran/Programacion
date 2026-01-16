@@ -15,13 +15,13 @@ import Pokemon2023.interfaces.Atacador;
  *
  * Extiende la clase {@link Pokemon} e implementa {@link Atacable}.
  */
-public class PokemonElectrico extends Pokemon implements Atacable {
+public class PokemonElectrico extends PokemonAtacable{
 
     /** Cantidad de daño adicional que recibe bajo lluvia si el atacante también es eléctrico. */
     private int resistenciaDeLluvia;
 
     /** Bonificación aplicada al ataque durante tormentas eléctricas. */
-    private double bonificacionTormenta = 1.0;
+    private double bonificacionTormenta;
 
     /** Valor mínimo permitido para la resistencia a la lluvia. */
     private static final int VALOR_MINIMO_DE_DAÑO_LLUVIA = 10;
@@ -43,6 +43,7 @@ public class PokemonElectrico extends Pokemon implements Atacable {
 
         super(nombre, puntosSalud, puntosAtaque, defensa);
         setResistenciaDeLluvia(resistenciaDeLluvia);
+        bonificacionTormenta = 1.0;
     }
 
     /**
@@ -84,19 +85,10 @@ public class PokemonElectrico extends Pokemon implements Atacable {
     public void recibirDaño(WeatherCondition tiempo, int puntosAtaque, Atacador atacador) throws MuerteException {
 
         // Si llueve y el atacante es eléctrico, el daño aumenta
-        if (tiempo == WeatherCondition.LLUVIA && atacador instanceof PokemonElectrico) {
-            puntosAtaque += resistenciaDeLluvia;
+        if (tiempo == WeatherCondition.LLUVIA) {
+            puntosAtaque -= puntosAtaque * (resistenciaDeLluvia/100);
         }
-
-        // Cálculo del daño reducido por defensa
-        double factorDefensa = 1 - (getDefensa() / 100.0);
-        int dañoFinal = (int) (puntosAtaque * factorDefensa);
-
-        setPuntosSalud(getPuntosSalud() - dañoFinal);
-
-        if (!estaVivo()) {
-            throw new MuerteException("El Pokémon " + getNombre() + " fue al cielo");
-        }
+        super.recibirDaño(tiempo, puntosAtaque, atacador);
     }
 
     /**
@@ -115,18 +107,12 @@ public class PokemonElectrico extends Pokemon implements Atacable {
         if (weatherCondition == WeatherCondition.TORMENTA_ELECTRICA) {
             bonificacionTormenta = 1.0 + Math.random();
             throw new RoundStartException("El Pokémon " + getNombre() + " recibe una bonificación por la tormenta eléctrica");
+        } else if (weatherCondition == WeatherCondition.LLUVIA) {
+            bonificacionTormenta = 1.0;
+            throw new RoundStartException("Esta ronda disminuye el daño recibido");
         } else {
             bonificacionTormenta = 1.0; // Reset si no hay tormenta
         }
     }
 
-    /**
-     * Indica si el Pokémon sigue vivo.
-     *
-     * @return true si tiene salud mayor que 0, false en caso contrario.
-     */
-    @Override
-    public boolean estaVivo() {
-        return getPuntosSalud() > 0;
-    }
 }

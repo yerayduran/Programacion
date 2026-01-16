@@ -137,8 +137,7 @@ public abstract class Pokemon implements Atacador {
      * @throws MuerteException Si el ataque provoca la muerte del objetivo.
      */
     @Override
-    public void atacar(Atacable objetivo, WeatherCondition tiempo) throws MuerteException {
-    }
+    public abstract void atacar(Atacable objetivo, WeatherCondition tiempo) throws MuerteException;
 
     /**
      * Método abstracto que define el comportamiento del Pokémon
@@ -154,5 +153,7 @@ public abstract class Pokemon implements Atacador {
      *
      * @return true si tiene salud mayor que 0, false en caso contrario.
      */
-    public abstract boolean estaVivo();
+    public boolean estaVivo(){
+        return getPuntosSalud() > 0;
+    }
 }

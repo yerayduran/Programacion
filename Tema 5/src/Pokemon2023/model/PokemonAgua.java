@@ -12,27 +12,35 @@ import Pokemon2023.interfaces.Atacador;
  * Extiende la clase {@link Pokemon} e implementa la interfaz {@link Atacable},
  * añadiendo mecánicas propias como hidratación y precisión variable.
  */
-public class PokemonAgua extends Pokemon implements Atacable {
+public class PokemonAgua extends PokemonAtacable {
 
-    /** Valor máximo permitido para la hidratación. */
+    /**
+     * Valor máximo permitido para la hidratación.
+     */
     private static final int VALOR_MAX_HIDRATACION = 20;
 
-    /** Valor mínimo permitido para la hidratación. */
+    /**
+     * Valor mínimo permitido para la hidratación.
+     */
     private static final int VALOR_MIN_HIDRATACION = 10;
 
-    /** Cantidad de hidratación que influye en la curación bajo lluvia. */
+    /**
+     * Cantidad de hidratación que influye en la curación bajo lluvia.
+     */
     private int valorHidratacion;
 
-    /** Precisión del ataque, que puede aumentar bajo lluvia. */
+    /**
+     * Precisión del ataque, que puede aumentar bajo lluvia.
+     */
     private double precision = 1.0;
 
     /**
      * Constructor del Pokémon de tipo Agua.
      *
-     * @param nombre Nombre del Pokémon.
-     * @param puntosSalud Salud inicial.
-     * @param puntosAtaque Ataque inicial.
-     * @param defensa Defensa inicial.
+     * @param nombre           Nombre del Pokémon.
+     * @param puntosSalud      Salud inicial.
+     * @param puntosAtaque     Ataque inicial.
+     * @param defensa          Defensa inicial.
      * @param valorHidratacion Valor de hidratación.
      * @throws ValorNoValidoException Si hidratación, ataque o defensa están fuera de rango.
      */
@@ -56,33 +64,12 @@ public class PokemonAgua extends Pokemon implements Atacable {
         this.valorHidratacion = valorHidratacion;
     }
 
-    /**
-     * Recibe daño de un atacante, aplicando la defensa del Pokémon de tipo Agua.
-     *
-     * @param tiempo Condición climática actual.
-     * @param puntosAtaque Puntos de ataque del atacante.
-     * @param atacador Instancia del atacante.
-     * @throws MuerteException Si el Pokémon muere tras recibir el daño.
-     */
-    @Override
-    public void recibirDaño(WeatherCondition tiempo, int puntosAtaque, Atacador atacador) throws MuerteException {
-
-        // Cálculo del daño reducido por defensa
-        double factorDefensa = 1 - (getDefensa() / 100.0);
-        int dañoFinal = (int) (puntosAtaque * factorDefensa);
-
-        setPuntosSalud(getPuntosSalud() - dañoFinal);
-
-        if (!estaVivo()) {
-            throw new MuerteException("El Pokémon " + getNombre() + " fue al cielo");
-        }
-    }
 
     /**
      * Ataca a un objetivo aplicando la precisión actual del Pokémon.
      *
      * @param objetivo Pokémon objetivo del ataque.
-     * @param tiempo Condición climática actual.
+     * @param tiempo   Condición climática actual.
      * @throws MuerteException Si el ataque provoca la muerte del objetivo.
      */
     @Override
@@ -104,6 +91,8 @@ public class PokemonAgua extends Pokemon implements Atacable {
             return;
         }
 
+        precision = 1.0;
+
         if (weatherCondition == WeatherCondition.LLUVIA) {
             // Cura por hidratación
             setPuntosSalud(getPuntosSalud() + valorHidratacion);
@@ -112,20 +101,9 @@ public class PokemonAgua extends Pokemon implements Atacable {
             precision += Math.random();
 
             throw new RoundStartException("El Pokémon " + getNombre() + " recibe una curación por la lluvia");
-        } else {
-            precision = 1.0; // Reinicio si no llueve
         }
     }
 
-    /**
-     * Indica si el Pokémon sigue vivo.
-     *
-     * @return true si tiene salud mayor que 0, false en caso contrario.
-     */
-    @Override
-    public boolean estaVivo() {
-        return getPuntosSalud() > 0;
-    }
 }
 
 

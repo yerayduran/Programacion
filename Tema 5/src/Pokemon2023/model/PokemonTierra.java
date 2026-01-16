@@ -17,7 +17,7 @@ import Pokemon2023.interfaces.Atacador;
  *
  * Extiende la clase {@link Pokemon} e implementa {@link Atacable}.
  */
-public class PokemonTierra extends Pokemon implements Atacable {
+public class PokemonTierra extends PokemonAtacable {
 
     /** Cantidad de daño reducido cuando recibe ataques de tipo Eléctrico. */
     private int resistenciaElectrica;
@@ -29,7 +29,7 @@ public class PokemonTierra extends Pokemon implements Atacable {
     private static final int MAX_RESISTENCIA_ELECTRICA = 9;
 
     /** Bonificación aplicada al ataque durante tormentas de arena. */
-    private double bonificacionTormentaTierra = 1.0;
+    private double bonificacionTormentaTierra;
 
     /**
      * Constructor del Pokémon de tipo Tierra.
@@ -44,6 +44,7 @@ public class PokemonTierra extends Pokemon implements Atacable {
     public PokemonTierra(String nombre, int puntosSalud, int puntosAtaque, int defensa, int resistenciaElectrica) throws ValorNoValidoException {
         super(nombre, puntosSalud, puntosAtaque, defensa);
         setResistenciaElectrica(resistenciaElectrica);
+        bonificacionTormentaTierra = 1.0;
     }
 
     /**
@@ -94,16 +95,6 @@ public class PokemonTierra extends Pokemon implements Atacable {
     }
 
     /**
-     * Indica si el Pokémon sigue vivo.
-     *
-     * @return true si tiene salud mayor que 0, false en caso contrario.
-     */
-    @Override
-    public boolean estaVivo() {
-        return getPuntosSalud() > 0;
-    }
-
-    /**
      * Recibe daño de un atacante, aplicando defensa y resistencia eléctrica si corresponde.
      *
      * @param tiempo Condición climática actual.
@@ -121,15 +112,6 @@ public class PokemonTierra extends Pokemon implements Atacable {
                 puntosAtaque = 0;
             }
         }
-
-        // Cálculo del daño reducido por defensa
-        double factorDefensa = 1 - (getDefensa() / 100.0);
-        int dañoFinal = (int) (puntosAtaque * factorDefensa);
-
-        setPuntosSalud(getPuntosSalud() - dañoFinal);
-
-        if (!estaVivo()) {
-            throw new MuerteException("El Pokémon " + getNombre() + " fue al cielo");
-        }
+        super.recibirDaño(tiempo, puntosAtaque, atacador);
     }
 }

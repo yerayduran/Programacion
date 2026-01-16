@@ -14,13 +14,13 @@ import Pokemon2023.interfaces.Atacador;
  *
  * Extiende la clase {@link Pokemon} e implementa {@link Atacable}.
  */
-public class PokemonFuego extends Pokemon implements Atacable {
+public class PokemonFuego extends PokemonAtacable{
 
     /** Valor mínimo permitido para la resistencia al agua. */
     private static final int MIN_RESISTENCIA_AGUA = 5;
 
     /** Valor máximo permitido para la resistencia al agua. */
-    private static final int MAX_RESISTENCIA_AGUA = 10;
+    private static final int MAX_RESISTENCIA_AGUA = 15;
 
     /** Cantidad de daño reducido cuando recibe ataques de tipo Agua. */
     private int resistenciaAgua;
@@ -96,16 +96,8 @@ public class PokemonFuego extends Pokemon implements Atacable {
                 puntosAtaque = 0;
             }
         }
+        super.recibirDaño(tiempo, puntosAtaque, atacador);
 
-        // Cálculo del daño reducido por defensa
-        double factorDefensa = 1 - (getDefensa() / 100.0);
-        int dañoFinal = (int) (puntosAtaque * factorDefensa);
-
-        setPuntosSalud(getPuntosSalud() - dañoFinal);
-
-        if (!estaVivo()) {
-            throw new MuerteException("El Pokémon " + getNombre() + " nos ha dejado");
-        }
     }
 
     /**
@@ -119,15 +111,5 @@ public class PokemonFuego extends Pokemon implements Atacable {
     public void atacar(Atacable objetivo, WeatherCondition tiempo) throws MuerteException {
         int daño = (int) (getPuntosAtaque() * bonificacionSol);
         objetivo.recibirDaño(tiempo, daño, this);
-    }
-
-    /**
-     * Indica si el Pokémon sigue vivo.
-     *
-     * @return true si tiene salud mayor que 0, false en caso contrario.
-     */
-    @Override
-    public boolean estaVivo() {
-        return getPuntosSalud() > 0;
     }
 }
