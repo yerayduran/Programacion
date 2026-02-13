@@ -29,8 +29,8 @@ public class Alumno {
     @Override
     public String toString() {
         return "Alumno{" +
-                "nombre='" + nombre + '\'' +
-                ", adn='" + adn + '\'' +
+                "nombre='" + getNombre() + '\'' +
+                ", adn='" + getAdn() + '\'' +
                 '}';
     }
 
