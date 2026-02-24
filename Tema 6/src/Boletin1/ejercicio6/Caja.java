@@ -1,13 +1,14 @@
 package Boletin1.ejercicio6;
 
 import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class Caja{
 
     private int numeroCaja;
     private boolean estaAbierta;
-    private LinkedList<Integer> colaCliente;
+    private Queue<Integer> colaCliente;
 
     public Caja(int numeroCaja) {
         this.numeroCaja = numeroCaja;
@@ -15,13 +16,6 @@ public class Caja{
         colaCliente = new LinkedList<>();
     }
 
-    public int getNumeroCaja() {
-        return numeroCaja;
-    }
-
-    public void setEstaAbierta(boolean estaAbierta) {
-        this.estaAbierta = estaAbierta;
-    }
 
     public boolean isEstaAbierta() {
         return estaAbierta;
@@ -70,9 +64,7 @@ public class Caja{
             throw new CajaException("No hay clientes en la caja");
         }
 
-
-        cliente = colaCliente.get(0);
-        colaCliente.remove(0);
+        cliente = colaCliente.poll();
 
         return cliente;
     }
