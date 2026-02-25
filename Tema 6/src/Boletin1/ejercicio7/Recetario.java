@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Recetario {
 
-    private HashMap<String, Receta> recetas;
+    private Map<String, Receta> recetas;
 
     public Recetario(){
         this.recetas = new HashMap<>();
