@@ -1,7 +1,5 @@
 package Boletin1.ejercicio7;
 
-import java.util.Objects;
-
 public class Ingrediente {
 
     private String nombre;
@@ -24,23 +22,4 @@ public class Ingrediente {
         this.cantidad = cantidad;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Ingrediente that)) return false;
-        return cantidad == that.cantidad && Objects.equals(nombre, that.nombre);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(nombre, cantidad);
-    }
-
-    @Override
-    public String toString() {
-        return "Ingrediente{" + "nombre=" + nombre + ", cantidad=" + cantidad + '}';
-    }
 }
