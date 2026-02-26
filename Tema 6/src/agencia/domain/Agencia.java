@@ -1,44 +1,32 @@
 package agencia.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Agencia {
 
-    private List<Ruta> rutas;
+    private Map<Integer, Cliente> clientes;
 
-    private String nombre;
-    private int id;
-
-    public Agencia(String nombre, int id) {
-        this.nombre = nombre;
-        this.id = id;
-        this.rutas = new ArrayList<>();
+    public Agencia() {
+        this.clientes = new HashMap<>();
     }
 
-    public List<Ruta> getRutas() {
-        return rutas;
+    public void añadirCliente(Cliente cliente) {
+        clientes.put(cliente.hashCode(), cliente);
     }
 
-    public void setRutas(List<Ruta> rutas) {
-        this.rutas = rutas;
+    public List<Cliente> clientesConParada(String parada) {
+        List<Cliente> resultado = new ArrayList<>();
+
+        for (Cliente c : clientes.values()) {
+            for (Ruta r : c.getRutas()) {
+                if (r.getParadas().contains(parada)) {
+                    resultado.add(c);
+                    break;
+                }
+            }
+        }
+
+        resultado.sort(Comparator.comparing(Cliente::getNombre));
+        return resultado;
     }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-
 }
