@@ -41,6 +41,7 @@ public class Receta {
 
     // Nota para cambiar
     public void añadirIngrediente(Ingrediente ingredienteNuevo) throws RecetaException {
+
         for(Ingrediente ingred : ingredientes){
             if (ingred.getNombre().equalsIgnoreCase(ingredienteNuevo.getNombre())){
 
@@ -58,7 +59,7 @@ public class Receta {
         String nombre = ingredienteABorrar.getNombre();
         boolean borrado = ingredientes.removeIf(ingred -> ingred.getNombre().equalsIgnoreCase(nombre));
 
-        if (!borrado && !ingredientes.isEmpty()) {
+        if (!borrado) {
 
             throw new RecetaException("Ingrediente no encontrado: " + nombre);
         }
