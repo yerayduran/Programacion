@@ -21,8 +21,8 @@ public class Cliente {
         return nombre;
     }
 
-    public Collection<Ruta> getRutas() {
-        return rutas.values();
+    public List<Ruta> getRutas() {
+        return new ArrayList<>(rutas.values());
     }
 
     public void añadirRuta(Ruta ruta) throws RutaDuplicadaException {
@@ -46,11 +46,13 @@ public class Cliente {
         return ruta;
     }
 
-    public Set<String> obtenerTodasLasParadas() {
-        Set<String> resultado = new TreeSet<>();
+    public List<String> obtenerTodasLasParadas() {
+        Set<String> resultado = new HashSet<>();
         for (Ruta r : rutas.values()) {
             resultado.addAll(r.getParadas());
         }
-        return resultado;
+        return resultado.stream().sorted().toList();
     }
+
+
 }

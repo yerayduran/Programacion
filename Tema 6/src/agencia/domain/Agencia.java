@@ -29,4 +29,16 @@ public class Agencia {
         resultado.sort(Comparator.comparing(Cliente::getNombre));
         return resultado;
     }
+
+    public List<Cliente> clientesConParadaStream(String parada) {
+        return  clientes.values().stream()
+                .filter(c -> c.getRutas().stream()
+                    .flatMap(r-> r.getParadas().stream())
+                    .anyMatch(p -> p.equalsIgnoreCase(parada))
+                ).toList();
+    }
+
+    public void mostrarRutasDeUnCliente(Cliente cliente) {
+        cliente.getRutas().forEach(System.out::println);
+    }
 }
