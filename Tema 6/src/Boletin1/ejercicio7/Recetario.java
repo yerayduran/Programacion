@@ -25,7 +25,7 @@ public class Recetario {
         }
 
         List<String> nombres = new ArrayList<>();
-        Collections.sort(nombres, String.CASE_INSENSITIVE_ORDER);
+        Collections.sort(nombres, null);
         StringBuilder sb = new StringBuilder();
 
         for (String nombre : nombres) {
