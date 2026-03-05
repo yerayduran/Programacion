@@ -1,10 +1,8 @@
 package examen2023;
 
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Liga {
 
@@ -39,30 +37,37 @@ public class Liga {
     }
 
     public void eliminarEquipo(Equipo equipo) throws LigaException {
-        if (!equipos.contains(equipo)) {
+        if (!equipos.remove(equipo)) {
             throw new LigaException("El equipo no forma parte de la liga.");
         }
-        equipos.add(equipo);
     }
 
     public void unirEquipos(Equipo equipo1, Equipo equipo2) throws LigaException {
-        if (!equipo1.getNombre().equals(equipo2.getNombre())) {
-            throw new LigaException("Ambos equipos deben pertenecer a la misma liga.");
+        if (equipos.contains(equipo1) && equipos.contains(equipo2)) {
+            Set<Jugador> nuevoJugadores = new HashSet<>(equipo1.getJugadores());
+            nuevoJugadores.addAll(equipo2.getJugadores());
+            equipo1.setJugadores(nuevoJugadores);
         }
-
-        for (Jugador jugador : equipo2.getJugadores()) {
-            equipo1.añadirJugador(jugador);
+        else {
+            throw new LigaException("Uno de estos dos equipos no esta en la liga");
         }
-
-        equipo2.limpiarJugadores();
     }
 
-    public List<Jugador> jugadoresEnComun(Equipo e1, Equipo e2) throws LigaException {
-
+    public String jugadoresEnComun(Equipo e1, Equipo e2) throws LigaException {
+        if (equipos.contains(e1) && equipos.contains(e2)) {
+            return e1.getJugadores().stream()
+                    .filter(e2.getJugadores()::contains)
+                    .map(Jugador::getNombre)
+                    .collect(Collectors.joining(", "));
+        }
+        else {
+            throw new LigaException("Uno de estos dos equipos ya esta en la liga");
+        }
     }
 
     public double mediaEdad() throws LigaException {
-
+        return todosLosJugadores().stream().mapToDouble(Jugador::getEdad)
+                .average().orElseThrow(()  -> new LigaException("No se puede cargar la edad media"));
     }
 
     public List<Jugador> jugadoresOrdenadosEdad(List<Jugador> jugadores) {
@@ -74,15 +79,14 @@ public class Liga {
     }
 
     public List<Jugador> jugadoresOrdenadosNombre(List<Jugador> jugadores){
-
         return jugadores.stream()
                 .sorted()
                 .toList();
 
     }
 
-    private Set<Jugador> todosLosJugadores() {
-
+    public Set<Jugador> todosLosJugadores() {
+        return equipos.stream().flatMap(equipo -> equipo.getJugadores().stream()).collect(Collectors.toSet());
     }
 
     @Override

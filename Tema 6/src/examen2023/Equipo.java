@@ -1,16 +1,17 @@
 package examen2023;
 
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Equipo {
 
     private String nombre;
-    private List<Jugador> jugadores;
+    private Set<Jugador> jugadores;
 
     public Equipo(String nombre) {
         this.nombre = nombre;
-        this.jugadores = new ArrayList<>();
+        this.jugadores = new HashSet<>();
     }
 
     public String getNombre() {
@@ -21,18 +22,18 @@ public class Equipo {
         this.nombre = nombre;
     }
 
-    public List<Jugador> getJugadores() {
+    public Set<Jugador> getJugadores() {
         return jugadores;
     }
 
-    public void setJugadores(List<Jugador> jugadores){
+    public void setJugadores(Set<Jugador> jugadores){
         this.jugadores = jugadores;
     }
 
-    public void añadirJugador(Jugador jugador) {
+    public void añadirJugador(Jugador jugador) throws LigaException {
+        if (!jugadores.add(jugador)) {
+            throw new LigaException("Este Jugador ya esta en el equipo");
+        }
     }
 
-    public void limpiarJugadores() {
-
-    }
 }

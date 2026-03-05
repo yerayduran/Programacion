@@ -10,14 +10,22 @@ public class Jugador implements Comparable<Jugador> {
     private LocalDate fechaNacimiento;
     private Posicion posicion;
     private String pais;
+    private int edad;
 
     public Jugador(String nombre, LocalDate fechaNacimiento, String posicion, String pais) {
+        assert nombre != null;
         this.nombre = nombre;
         this.fechaNacimiento = fechaNacimiento;
         this.posicion = Posicion.valueOf(posicion.toUpperCase());
         this.pais = pais;
+        calcularE();
     }
 
+    private void calcularE(){
+        LocalDate fechaActual = LocalDate.now();
+        Period periodo = Period.between(fechaNacimiento, fechaActual);
+        edad = periodo.getYears();
+    }
 
     public String getNombre() {
         return nombre;
@@ -27,24 +35,17 @@ public class Jugador implements Comparable<Jugador> {
         return fechaNacimiento;
     }
 
-    public int getEdad(){
-        LocalDate fechaActual = LocalDate.now();
-        Period periodo = Period.between(fechaNacimiento, fechaActual);
-        return periodo.getYears();
-
-
-    }
-
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
-
     public Posicion getPosicion() {
         return posicion;
     }
 
-    public String getPais() { return pais; }
+    public String getPais() {
+        return pais;
+    }
 
+    public int getEdad() {
+        return edad;
+    }
 
     @Override
     public boolean equals(Object o) {
