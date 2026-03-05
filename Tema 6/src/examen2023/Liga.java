@@ -1,12 +1,10 @@
 package examen2023;
 
-import agencia.exceptions.RutaDuplicadaException;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Liga {
 
@@ -69,10 +67,10 @@ public class Liga {
 
     public List<Jugador> jugadoresOrdenadosEdad(List<Jugador> jugadores) {
         return jugadores.stream()
-                .sorted(Comparator.comparing(Jugador::getFechaNacimiento)
+                .sorted(Comparator.comparing(Jugador::getEdad)
                         .reversed())
 
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Jugador> jugadoresOrdenadosNombre(List<Jugador> jugadores){
