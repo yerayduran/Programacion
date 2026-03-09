@@ -330,19 +330,21 @@ public class MiEntradaSalida {
 
         return this.conjunto.get(o).intValue();
     }
-
     /**
      * Añade un equipo a la liga.
      *
-     * QUE HACE:
-     * - Comprueba que el equipo tenga jugadores.
-     * - Comprueba que el equipo no esté ya dentro de la liga.
-     * - Si todo está correcto, lo añade a la colección de equipos.
+     * @param equipo equipo que se desea añadir a la liga
+     * @throws LigaException si el equipo no tiene jugadores o ya pertenece a la liga
      *
-     * QUE DEBES ADAPTAR EN OTRO PROYECTO:
-     * - La clase Equipo debe tener el método getJugadores().
-     * - La variable "equipos" debe ser una colección (Set o List) que almacene los equipos de la liga.
-     * - La excepción LigaException debe existir o sustituirse por otra (por ejemplo Exception o IllegalArgumentException).
+     * Funcionamiento:
+     * - Comprueba que el equipo tenga al menos un jugador.
+     * - Verifica que el equipo no esté ya registrado en la liga.
+     * - Si pasa las validaciones, lo añade a la colección de equipos.
+     *
+     * Requisitos para reutilizar:
+     * - La clase Equipo debe implementar el método getJugadores().
+     * - Debe existir una colección llamada "equipos" que almacene los equipos.
+     * - Debe existir la excepción LigaException o sustituirse por otra.
      */
     public void anadirEquipo(Equipo equipo) throws LigaException {
         if (equipo.getJugadores().isEmpty()) {
@@ -357,13 +359,16 @@ public class MiEntradaSalida {
     /**
      * Elimina un equipo de la liga.
      *
-     * QUE HACE:
-     * - Intenta eliminar el equipo de la colección de equipos.
-     * - Si no existe en la liga lanza una excepción.
+     * @param equipo equipo que se desea eliminar
+     * @throws LigaException si el equipo no pertenece a la liga
      *
-     * QUE DEBES ADAPTAR:
-     * - La variable "equipos" debe ser una colección que contenga objetos Equipo.
-     * - Puede necesitar equals() en la clase Equipo para que remove funcione correctamente.
+     * Funcionamiento:
+     * - Intenta eliminar el equipo de la colección de equipos.
+     * - Si el equipo no existe en la liga se lanza una excepción.
+     *
+     * Requisitos para reutilizar:
+     * - Debe existir una colección llamada "equipos".
+     * - La clase Equipo debería implementar equals() correctamente.
      */
     public void eliminarEquipo(Equipo equipo) throws LigaException {
         if (!equipos.remove(equipo)) {
@@ -374,47 +379,46 @@ public class MiEntradaSalida {
     /**
      * Une los jugadores de dos equipos.
      *
-     * QUE HACE:
-     * - Comprueba que ambos equipos estén en la liga.
-     * - Crea un nuevo Set con todos los jugadores del equipo1.
-     * - Añade los jugadores del equipo2.
-     * - Asigna esa nueva lista de jugadores al equipo1.
+     * @param equipo1 primer equipo
+     * @param equipo2 segundo equipo
+     * @throws LigaException si alguno de los equipos no pertenece a la liga
      *
-     * RESULTADO:
-     * equipo1 tendrá los jugadores de ambos equipos.
+     * Funcionamiento:
+     * - Comprueba que ambos equipos estén registrados en la liga.
+     * - Crea un nuevo conjunto con los jugadores de equipo1.
+     * - Añade los jugadores de equipo2.
+     * - Asigna el nuevo conjunto al equipo1.
      *
-     * QUE DEBES ADAPTAR:
-     * - Equipo debe tener:
+     * Requisitos para reutilizar:
+     * - La clase Equipo debe tener:
      *      getJugadores()
      *      setJugadores(Set<Jugador>)
-     * - Jugador debe ser una clase existente.
      */
     public void unirEquipos(Equipo equipo1, Equipo equipo2) throws LigaException {
         if (equipos.contains(equipo1) && equipos.contains(equipo2)) {
             Set<Jugador> nuevoJugadores = new HashSet<>(equipo1.getJugadores());
             nuevoJugadores.addAll(equipo2.getJugadores());
             equipo1.setJugadores(nuevoJugadores);
-        }
-        else {
+        } else {
             throw new LigaException("Uno de estos dos equipos no esta en la liga");
         }
     }
 
     /**
-     * Devuelve los nombres de los jugadores que están en ambos equipos.
+     * Obtiene los jugadores que están presentes en ambos equipos.
      *
-     * QUE HACE:
-     * - Busca los jugadores que aparecen en los dos equipos.
-     * - Devuelve sus nombres separados por comas.
+     * @param e1 primer equipo
+     * @param e2 segundo equipo
+     * @return nombres de los jugadores en común separados por coma
+     * @throws LigaException si alguno de los equipos no pertenece a la liga
      *
-     * EJEMPLO RESULTADO:
-     * "Carlos, Juan, Pedro"
+     * Funcionamiento:
+     * - Compara los jugadores de ambos equipos.
+     * - Filtra los que aparecen en los dos.
+     * - Devuelve sus nombres en formato texto.
      *
-     * QUE DEBES ADAPTAR:
-     * - Jugador debe tener:
-     *      getNombre()
-     * - Equipo debe tener:
-     *      getJugadores()
+     * Requisitos para reutilizar:
+     * - La clase Jugador debe tener el método getNombre().
      */
     public String jugadoresEnComun(Equipo e1, Equipo e2) throws LigaException {
         if (equipos.contains(e1) && equipos.contains(e2)) {
@@ -422,8 +426,7 @@ public class MiEntradaSalida {
                     .filter(e2.getJugadores()::contains)
                     .map(Jugador::getNombre)
                     .collect(Collectors.joining(", "));
-        }
-        else {
+        } else {
             throw new LigaException("Uno de estos dos equipos ya esta en la liga");
         }
     }
@@ -431,69 +434,59 @@ public class MiEntradaSalida {
     /**
      * Calcula la edad media de todos los jugadores de la liga.
      *
-     * QUE HACE:
-     * - Obtiene todos los jugadores de todos los equipos.
-     * - Calcula la media de sus edades.
-     * - Si no hay jugadores lanza una excepción.
+     * @return edad media de los jugadores
+     * @throws LigaException si no hay jugadores registrados
      *
-     * QUE DEBES ADAPTAR:
-     * - Jugador debe tener:
-     *      getEdad()
-     * - Debe existir el método todosLosJugadores().
+     * Funcionamiento:
+     * - Obtiene todos los jugadores de todos los equipos.
+     * - Calcula la media de sus edades usando Streams.
      */
     public double mediaEdad() throws LigaException {
-        return todosLosJugadores().stream().mapToDouble(Jugador::getEdad)
-                .average().orElseThrow(()  -> new LigaException("No se puede cargar la edad media"));
+        return todosLosJugadores().stream()
+                .mapToDouble(Jugador::getEdad)
+                .average()
+                .orElseThrow(() -> new LigaException("No se puede cargar la edad media"));
     }
 
     /**
-     * Ordena una lista de jugadores por edad (de mayor a menor).
+     * Ordena una lista de jugadores por edad de mayor a menor.
      *
-     * QUE HACE:
-     * - Recibe una lista de jugadores.
-     * - Los ordena por edad descendente.
-     * - Devuelve una nueva lista ordenada.
+     * @param jugadores lista de jugadores
+     * @return lista ordenada por edad descendente
      *
-     * QUE DEBES ADAPTAR:
-     * - Jugador debe tener:
-     *      getEdad()
+     * Requisitos para reutilizar:
+     * - La clase Jugador debe tener el método getEdad().
      */
     public List<Jugador> jugadoresOrdenadosEdad(List<Jugador> jugadores) {
         return jugadores.stream()
-                .sorted(Comparator.comparing(Jugador::getEdad)
-                        .reversed())
+                .sorted(Comparator.comparing(Jugador::getEdad).reversed())
                 .toList();
     }
 
     /**
      * Ordena jugadores alfabéticamente por nombre.
      *
-     * QUE HACE:
-     * - Ordena la lista usando el orden natural.
+     * @param jugadores lista de jugadores
+     * @return lista ordenada alfabéticamente
      *
-     * QUE DEBES ADAPTAR:
+     * Requisitos para reutilizar:
      * - La clase Jugador debe implementar Comparable.
-     *
-     * Ejemplo:
-     * public class Jugador implements Comparable<Jugador>
      */
-    public List<Jugador> jugadoresOrdenadosNombre(List<Jugador> jugadores){
+    public List<Jugador> jugadoresOrdenadosNombre(List<Jugador> jugadores) {
         return jugadores.stream()
                 .sorted()
                 .toList();
     }
 
     /**
-     * Devuelve todos los jugadores de todos los equipos sin repetir.
+     * Obtiene todos los jugadores de todos los equipos de la liga.
      *
-     * QUE HACE:
-     * - Recorre todos los equipos de la liga.
+     * @return conjunto de jugadores sin duplicados
+     *
+     * Funcionamiento:
+     * - Recorre todos los equipos.
      * - Extrae sus jugadores.
-     * - Los une en un único Set para evitar duplicados.
-     *
-     * QUE DEBES ADAPTAR:
-     * - Equipo debe tener getJugadores()
-     * - Jugador debe tener equals() y hashCode() bien definidos si se usa Set.
+     * - Los combina en un único Set.
      */
     public Set<Jugador> todosLosJugadores() {
         return equipos.stream()
@@ -504,26 +497,21 @@ public class MiEntradaSalida {
     /**
      * Devuelve una representación en texto de la liga.
      *
-     * QUE HACE:
-     * - Muestra el nombre de la liga.
-     * - Muestra todos los equipos que contiene.
+     * @return información de la liga y sus equipos
      *
-     * QUE DEBES ADAPTAR:
-     * - Debe existir la variable:
-     *      nombreLiga
-     * - La clase Equipo debería tener su propio toString().
+     * Funcionamiento:
+     * - Muestra el nombre de la liga.
+     * - Lista todos los equipos registrados.
      */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Bienvenidos a " + nombreLiga).append(System.lineSeparator());
         sb.append("Equipos: ").append(System.lineSeparator());
 
-        for (Equipo e: equipos) {
+        for (Equipo e : equipos) {
             sb.append(e).append(System.lineSeparator());
         }
 
         return sb.toString();
     }
-
-
 }
