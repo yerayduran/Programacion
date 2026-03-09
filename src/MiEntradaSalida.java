@@ -301,4 +301,32 @@ public class MiEntradaSalida {
             System.out.println();
         }
     }
+
+    /**
+     * Añade un objeto(Cartas, Juguetes, Piezas) en un conjunto de ese objeto(Mazo, bolsa, etc)
+     * @param o
+     * @return
+     */
+    public int addObjeto(Objeto o) {
+        return this.addObjeto(o, 1);
+    }
+
+    /**
+     * Permite añadir cualquier cantidad de un objeto dado a mi conjunto
+     * @param o el objeto del cual voy a añadir numeroDeObjetos unidades
+     * @param numeroDeObjetos el numero de unidades del objeto o que voy a añadir al conjunto
+     * @return el numero actual de unidades del objeto o resultante
+     */
+    public int addObjeto(Objeto o, int numeroDeObjetos) {
+        if (this.conjunto.containsKey(o)) {
+            this.conjunto.put(o, Integer.valueOf(this.conjunto.get(o).intValue() + numeroDeObjetos));
+        }
+        else {
+            this.conjunto.put(o, Integer.valueOf(numeroDeObjetos));
+        }
+
+        return this.conjunto.get(o).intValue();
+    }
+
+
 }
