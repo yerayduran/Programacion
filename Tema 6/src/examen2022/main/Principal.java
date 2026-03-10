@@ -1,6 +1,7 @@
 package examen2022.main;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -165,8 +166,17 @@ public class Principal {
      * @param nombre el nombre del cromo buscado
      * @return El cromo correspondiente
      */
-    private static Cromo get(String nombre) {
+    private static Cromo get(String nombre) throws MazoException {
+        Iterator<Cromo> it = todos.iterator();
 
+        while (it.hasNext()) {
+            Cromo c = it.next();
+            if (c.getNombre().equals(nombre)) {
+                return c;
+            }
+        }
+
+        throw new MazoException("El nombre dado no existe");
     }
 
 }
