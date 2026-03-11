@@ -55,8 +55,8 @@ public class Mazo {
     }
 
 
-    public String contarDiferentes() {
-        return this.mazo.size() + " diferentes.";
+    public long contarDiferentes() {
+        return this.mazo.size();
     }
 
     public List<Cromo> cromosDeUnEquipo(String equipoMostrar) {
