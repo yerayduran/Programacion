@@ -5,11 +5,18 @@ import examen2025.domain.Personaje;
 import examen2025.domain.TRaza;
 import examen2025.exceptions.DBException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Juego {
 
+    private Set<Personaje> personajes;
+
+    public Juego() {
+        this.personajes = new HashSet<>();
+    }
 
     public static void main(String[] args) {
         try {
@@ -42,9 +49,9 @@ public class Juego {
             System.out.println("Gohan ataca a " + android18.getNombre());
             juego.atacar(gohan, android18, "Special Beam Cannon");
 
-            /*System.out.println();
+            System.out.println();
             System.out.println(android18.getNombre() + " intenta atacar a Gohan");
-            juego.atacar(android18, gohan, "energy blast");*/
+            juego.atacar(android18, gohan, "energy blast");
 
             System.out.println();
             System.out.println("Todos los ataques restantes de todos los jugadores:");
@@ -69,6 +76,9 @@ public class Juego {
             System.out.println(e.getMessage());
         }
     }
+
+
+
 
     public static void crearPersonajes(Juego juego) throws DBException {
         Personaje goku = new Personaje("Goku", TRaza.SAIYAN, 100, 100, 100, 10);
@@ -103,7 +113,7 @@ public class Juego {
         Ataque finalAttack = new Ataque("Final Attack", 20, 3, 50);
         gohan.addAtaque(masenko1);
         gohan.addAtaque(masenko2);
-        //gohan.addAtaque(masenko3);
+        gohan.addAtaque(masenko3);
         gohan.addAtaque(specialBeamCannon);
         gohan.addAtaque(finalAttack);
 
@@ -128,12 +138,18 @@ public class Juego {
     }
 
     public Personaje buscarPersonaje(String nombre, TRaza raza) throws DBException {
-
+        return personajes.stream()
+                .filter(personaje -> personaje.getNombre().equals(nombre) && personaje.getRaza() == raza)
+                .findFirst()
+                .orElseThrow(() -> new DBException("Personaje no encontrado"));
     }
 
 
-    public void agregarPersonaje(Personaje personaje) throws DBException {
-
+    public void agregarPersonaje(Personaje personaje) throws DBException{
+        if (!personajes.add(personaje)) {
+            throw new DBException("Personaje ya existe");
+        }
+        personajes.add(personaje);
     }
 
     public void personajeConMasAtaques() throws DBException {
@@ -164,4 +180,6 @@ public class Juego {
 
     }
 
+    public void personajeConAtaqueMasPoderoso() throws DBException {
+    }
 }
