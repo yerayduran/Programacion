@@ -72,12 +72,12 @@ public class Personaje {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Personaje personaje)) return false;
-        return vida == personaje.vida && ki == personaje.ki && vidaMax == personaje.vidaMax && kiMax == personaje.kiMax && Objects.equals(nombre, personaje.nombre) && raza == personaje.raza && Objects.equals(ataques, personaje.ataques);
+        return Objects.equals(nombre, personaje.nombre) && raza == personaje.raza;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nombre, raza, vida, ki, ataques, vidaMax, kiMax);
+        return Objects.hash(nombre, raza);
     }
 
     @Override

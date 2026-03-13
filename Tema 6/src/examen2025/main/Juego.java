@@ -25,9 +25,9 @@ public class Juego {
             // Llamada al método que muestra los personajes con más ataques
             System.out.println("Personaje(s) que conocen más ataques:");
             juego.personajeConMasAtaques();
-            System.out.println();
-            System.out.println("Personaje(s) con el ataque más poderoso:");
-            juego.personajeConAtaqueMasPoderoso();
+            // System.out.println();
+            // System.out.println("Personaje(s) con el ataque más poderoso:");
+            //juego.personajeConAtaqueMasPoderoso();
             System.out.println();
             System.out.println("Ataques ordenados por nombre");
             juego.todosLosAtaquesOrdenadosNombre();
@@ -175,37 +175,32 @@ public class Juego {
     }
 
     public Ataque ataqueMasDañino(Personaje p1, Personaje p2) throws DBException{
-        if (p2.getVida() == 0){
-            throw new DBException(p2.getNombre() + " está muerto");
-        }
-        return p1.getAtaques().stream().max(Comparator.comparingInt(Ataque::getDaño))
-                .orElseThrow(() -> new DBException("No tienes ataques añadidos"));
+
+        return p1.getAtaques().stream()
+                .filter(ataque -> ataque.getKiNecesario() <= p1.getKi()).max(Comparator.comparingInt(Ataque::getDaño))
+                .orElseThrow(() -> new DBException("No se puede encontrar dicho ataque mas dañino"));
     }
 
-    public void atacar(Personaje p1, Personaje p2, String ataque) throws DBException {
+    /**
+     * Por hacer
+     * @param p1
+     * @param p2
+     * @param ataque
+     * @throws DBException
+     */
+    /*public void atacar(Personaje p1, Personaje p2, String ataque) throws DBException {
         if (p1.getVida() == 0 || p2.getVida() == 0){
-            throw new DBException("No se puede atacar");
+            throw new DBException("Uno de los dos esta muerto");
         }
 
-        Ataque ataqueP1 = p1.getAtaques().stream().filter(a -> a.getNombre().equalsIgnoreCase(ataque))
-                .max(Comparator.comparingInt(Ataque::getDaño))
-                .orElseThrow(() -> new DBException("No se encuentra el ataque"));
-        if (ataqueP1.getNivelPerfeccion() == 0) {
-            throw new DBException("No se puede lanzar el ataque");
-        }
-        if (p1.getKi() < ataqueP1.getKiNecesario()) {
-            throw new DBException("No hay ki necesario para lanzar el ataque");
-        }
-        if (ataqueP1.getDaño() >= p2.getVida()) {
-            p2.setVida(0);
-            System.out.println(p2.getNombre() + " ha muerto");
+        Ataque a = p1.getAtaques().stream().filter(a1 -> a1.getNombre().equalsIgnoreCase(ataque) && a1.getKiNecesario() <= p1.getKi())
+                .max((a1, a2) -> a1.getDaño() - a2.getDaño()).orElseThrow(() -> new DBException("Ataque no se puede lanzar"));
 
-        } else {
-            p2.setVida(p2.getVida() - ataqueP1.getDaño());
-            System.out.println("Se le ha quitado " + ataqueP1.getDaño() + " puntos de vida a" + p2.getNombre());
-        }
-        p1.getAtaques().remove(ataqueP1);
+
+
     }
+
+     */
 
     public void eliminarAtaquesInferioresANivel(int nivel){
         for(Personaje personaje : personajes){
@@ -226,28 +221,6 @@ public class Juego {
 
     }
 
-    public void personajeConAtaqueMasPoderoso() throws DBException {
-        if (personajes.isEmpty()) {
-            throw new DBException("No hay personajes en el juego");
-        }
 
-
-        Optional<Ataque> maxAtaqueOpt = personajes.stream()
-                .flatMap(p -> p.getAtaques().stream())
-                .max(Comparator.comparingInt(Ataque::getDaño));
-
-        Ataque maxAtaque = maxAtaqueOpt
-                .orElseThrow(() -> new DBException("No hay ataques en el juego"));
-
-        int maxDaño = maxAtaque.getDaño();
-
-
-        personajes.stream()
-                .filter(p -> p.getAtaques().stream()
-                        .anyMatch(a -> a.getDaño() == maxDaño))
-                .forEach(p -> System.out.println(
-                        p.getNombre() + " -> " + maxAtaque
-                ));
-    }
 
 }

@@ -4,7 +4,7 @@ import examen2025.exceptions.DBException;
 
 import java.util.Objects;
 
-public class Ataque {
+public class Ataque implements Comparable<Ataque> {
 
     private String nombre;
     private int kiNecesario;
@@ -67,5 +67,10 @@ public class Ataque {
     public String toString() {
         return String.format("Nombre: %s, Ki necesario: %d, Nivel perfección: %d, Daño: %d", this.nombre, this.kiNecesario,
                 this.nivelPerfeccion, this.daño);
+    }
+
+    @Override
+    public int compareTo(Ataque o) {
+        return this.nombre.compareTo(o.nombre);
     }
 }
