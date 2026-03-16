@@ -1,6 +1,4 @@
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MiEntradaSalida {
@@ -317,8 +315,8 @@ public class MiEntradaSalida {
     /**
      * Permite añadir cualquier cantidad de un objeto dado a mi conjunto
      * @param o el objeto del cual voy a añadir numeroDeObjetos unidades
-     * @param numeroDeObjetos el numero de unidades del objeto o que voy a añadir al conjunto
-     * @return el numero actual de unidades del objeto o resultante
+     * @param numeroDeObjetos el número de unidades del objeto o que voy a añadir al conjunto
+     * @return el número actual de unidades del objeto o resultante
      */
     public int addObjeto(Objeto o, int numeroDeObjetos) {
         if (this.conjunto.containsKey(o)) {
@@ -330,188 +328,354 @@ public class MiEntradaSalida {
 
         return this.conjunto.get(o).intValue();
     }
-    /**
-     * Añade un equipo a la liga.
-     *
-     * @param equipo equipo que se desea añadir a la liga
-     * @throws LigaException si el equipo no tiene jugadores o ya pertenece a la liga
-     *
-     * Funcionamiento:
-     * - Comprueba que el equipo tenga al menos un jugador.
-     * - Verifica que el equipo no esté ya registrado en la liga.
-     * - Si pasa las validaciones, lo añade a la colección de equipos.
-     *
-     * Requisitos para reutilizar:
-     * - La clase Equipo debe implementar el método getJugadores().
-     * - Debe existir una colección llamada "equipos" que almacene los equipos.
-     * - Debe existir la excepción LigaException o sustituirse por otra.
-     */
-    public void anadirEquipo(Equipo equipo) throws LigaException {
-        if (equipo.getJugadores().isEmpty()) {
-            throw new LigaException("El equipo no contiene jugadores.");
-        }
-        if (equipos.contains(equipo)) {
-            throw new LigaException("El equipo ya forma parte de la liga.");
-        }
-        equipos.add(equipo);
+
+    private static void mostrarCromos() {
+        todos.stream().map(c -> c.getNombre()).forEach(System.out::println);
+    }
+
+    private static void mostrarCromosDeMazo(Mazo m) {
+        m.getLista().forEach(System.out::println);
     }
 
     /**
-     * Elimina un equipo de la liga.
-     *
-     * @param equipo equipo que se desea eliminar
-     * @throws LigaException si el equipo no pertenece a la liga
-     *
-     * Funcionamiento:
-     * - Intenta eliminar el equipo de la colección de equipos.
-     * - Si el equipo no existe en la liga se lanza una excepción.
-     *
-     * Requisitos para reutilizar:
-     * - Debe existir una colección llamada "equipos".
-     * - La clase Equipo debería implementar equals() correctamente.
+     * Coge un cromo (de otro mazo, pero no se trata eso aqu�) y lo a�ade a mi mazo.
+     * Al mismo tiempo, elimina una unidad de uno de mis cromos. Si fuera la �ltima
+     * unidad, se ha de eliminar el cromo tambi�n.
+     * @param mio El cromo de mi mazo que voy a intercambiar
+     * @param nuevo El cromo de otro mazo que voy a recibir
+     * @throws MazoException Si intento intercambiar un cromo de mi mazo que no tengo
      */
-    public void eliminarEquipo(Equipo equipo) throws LigaException {
-        if (!equipos.remove(equipo)) {
-            throw new LigaException("El equipo no forma parte de la liga.");
-        }
-    }
-
-    /**
-     * Une los jugadores de dos equipos.
-     *
-     * @param equipo1 primer equipo
-     * @param equipo2 segundo equipo
-     * @throws LigaException si alguno de los equipos no pertenece a la liga
-     *
-     * Funcionamiento:
-     * - Comprueba que ambos equipos estén registrados en la liga.
-     * - Crea un nuevo conjunto con los jugadores de equipo1.
-     * - Añade los jugadores de equipo2.
-     * - Asigna el nuevo conjunto al equipo1.
-     *
-     * Requisitos para reutilizar:
-     * - La clase Equipo debe tener:
-     *      getJugadores()
-     *      setJugadores(Set<Jugador>)
-     */
-    public void unirEquipos(Equipo equipo1, Equipo equipo2) throws LigaException {
-        if (equipos.contains(equipo1) && equipos.contains(equipo2)) {
-            Set<Jugador> nuevoJugadores = new HashSet<>(equipo1.getJugadores());
-            nuevoJugadores.addAll(equipo2.getJugadores());
-            equipo1.setJugadores(nuevoJugadores);
-        } else {
-            throw new LigaException("Uno de estos dos equipos no esta en la liga");
-        }
-    }
-
-    /**
-     * Obtiene los jugadores que están presentes en ambos equipos.
-     *
-     * @param e1 primer equipo
-     * @param e2 segundo equipo
-     * @return nombres de los jugadores en común separados por coma
-     * @throws LigaException si alguno de los equipos no pertenece a la liga
-     *
-     * Funcionamiento:
-     * - Compara los jugadores de ambos equipos.
-     * - Filtra los que aparecen en los dos.
-     * - Devuelve sus nombres en formato texto.
-     *
-     * Requisitos para reutilizar:
-     * - La clase Jugador debe tener el método getNombre().
-     */
-    public String jugadoresEnComun(Equipo e1, Equipo e2) throws LigaException {
-        if (equipos.contains(e1) && equipos.contains(e2)) {
-            return e1.getJugadores().stream()
-                    .filter(e2.getJugadores()::contains)
-                    .map(Jugador::getNombre)
-                    .collect(Collectors.joining(", "));
-        } else {
-            throw new LigaException("Uno de estos dos equipos ya esta en la liga");
-        }
-    }
-
-    /**
-     * Calcula la edad media de todos los jugadores de la liga.
-     *
-     * @return edad media de los jugadores
-     * @throws LigaException si no hay jugadores registrados
-     *
-     * Funcionamiento:
-     * - Obtiene todos los jugadores de todos los equipos.
-     * - Calcula la media de sus edades usando Streams.
-     */
-    public double mediaEdad() throws LigaException {
-        return todosLosJugadores().stream()
-                .mapToDouble(Jugador::getEdad)
-                .average()
-                .orElseThrow(() -> new LigaException("No se puede cargar la edad media"));
-    }
-
-    /**
-     * Ordena una lista de jugadores por edad de mayor a menor.
-     *
-     * @param jugadores lista de jugadores
-     * @return lista ordenada por edad descendente
-     *
-     * Requisitos para reutilizar:
-     * - La clase Jugador debe tener el método getEdad().
-     */
-    public List<Jugador> jugadoresOrdenadosEdad(List<Jugador> jugadores) {
-        return jugadores.stream()
-                .sorted(Comparator.comparing(Jugador::getEdad).reversed())
-                .toList();
-    }
-
-    /**
-     * Ordena jugadores alfabéticamente por nombre.
-     *
-     * @param jugadores lista de jugadores
-     * @return lista ordenada alfabéticamente
-     *
-     * Requisitos para reutilizar:
-     * - La clase Jugador debe implementar Comparable.
-     */
-    public List<Jugador> jugadoresOrdenadosNombre(List<Jugador> jugadores) {
-        return jugadores.stream()
-                .sorted()
-                .toList();
-    }
-
-    /**
-     * Obtiene todos los jugadores de todos los equipos de la liga.
-     *
-     * @return conjunto de jugadores sin duplicados
-     *
-     * Funcionamiento:
-     * - Recorre todos los equipos.
-     * - Extrae sus jugadores.
-     * - Los combina en un único Set.
-     */
-    public Set<Jugador> todosLosJugadores() {
-        return equipos.stream()
-                .flatMap(equipo -> equipo.getJugadores().stream())
-                .collect(Collectors.toSet());
-    }
-
-    /**
-     * Devuelve una representación en texto de la liga.
-     *
-     * @return información de la liga y sus equipos
-     *
-     * Funcionamiento:
-     * - Muestra el nombre de la liga.
-     * - Lista todos los equipos registrados.
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Bienvenidos a " + nombreLiga).append(System.lineSeparator());
-        sb.append("Equipos: ").append(System.lineSeparator());
-
-        for (Equipo e : equipos) {
-            sb.append(e).append(System.lineSeparator());
+    public void intercambiar(Cromo mio, Cromo nuevo) throws MazoException {
+        if (!this.mazo.containsKey(mio)) {
+            throw new MazoException("No puedes intercambiar un cromo que no tienes");
         }
 
-        return sb.toString();
+        if (this.mazo.get(mio).intValue() > 1) {
+            // Tengo m�s de uno, por tanto el cromo se quedar� en el mazo
+            this.mazo.put(mio, Integer.valueOf(this.mazo.get(mio).intValue() - 1));
+        }
+        else {
+            // Tan solo tengo 1, por lo que habr� que eliminarse del mazo
+            this.mazo.remove(mio);
+        }
+
+        // Por �ltimo a�adimos el nuevo cromo al mazo
+        this.addCromo(nuevo);
     }
+
+    /**
+     * Mezcla mi mazo con otro que recibo como par�metro
+     * @param otro el mazo con el que voy a mezclar el m�o
+     */
+    public void mezclar (Mazo otro) {
+        otro.getMazo().forEach((cromo, unidades) -> this.addCromo(cromo, unidades));
+    }
+
+    /**
+     * Al no permitir los Map elementos repetidos, el tama�o del mismo representa
+     * el n�mero de cromos distintos que tengo
+     * @return
+     */
+    public int contarDiferentes() {
+        return this.mazo.size();
+    }
+
+    /**
+     * Devuelve los cromos de un equipo dado
+     * @param equipo El nombre del equipo
+     * @return Una lista con los cromos de dicho equipo
+     */
+    public List<Cromo> cromosDeUnEquipo(String equipo) {
+        /*
+         * Filtramos los cromos del mazo. Solo pasar�n el filtro aquellos escudos
+         * cuyo nombre sea equipo, o aquellos jugadores cuyo equipo sea equipo.
+         */
+        return mazo.keySet().stream().filter(c -> {
+            if (c instanceof Escudo) {
+                Escudo e = (Escudo) c;
+                return e.getNombre().equals(equipo);
+            }
+            else {
+                return ((Jugador) c).getEquipo().equals(equipo);
+            }
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * Calcula la altura media de un equipo
+     * @param equipo El nombre del equipo
+     * @return La altura media de los jugadores de un equipo dado o NaN
+     * si no existe dicho equipo o no tenemos jugadores del mismo
+     */
+    public double alturaMedia(String equipo) {
+        return mazo.keySet().stream().filter(c -> {
+                    if (c instanceof Jugador) {
+                        Jugador j = (Jugador) c;
+                        return j.getEquipo().equals(equipo);
+                    }
+                    else {
+                        return false;
+                    }
+                }).mapToInt(c -> ((Jugador) c).getAltura())
+                .average().orElse(Double.NaN);
+    }
+
+    /**
+     * Devuelve los cromos de nuestro mapa
+     * @return
+     */
+    public List<Cromo> getLista() {
+        return mazo.keySet().stream().collect(Collectors.toList());
+    }
+
+    /**
+     * Devuelve una lista con todos nuestros cromos ordenados por el orden dado
+     * @return Una lista con todos nuestros cromos ordenados por el orden dado
+     */
+    public List<Cromo> ordenar(){
+        return mazo.keySet().stream().sorted((a, b) -> {
+            if (a instanceof Escudo) {
+                // a es un escudo, �y b?
+                if (b instanceof Escudo) {
+                    // Los dos son escudos, comparamos por nombre
+                    Escudo e1 = (Escudo) a;
+                    Escudo e2 = (Escudo) b;
+                    return e1.getNombre().compareTo(e2.getNombre());
+                }
+                else {
+                    // a es un escudo y b un jugador
+                    return -1;
+                }
+            }
+            else {
+                // a es un jugador, �y b?
+                if (b instanceof Jugador) {
+                    // Los dos son jugadores, comparamos por nombre
+                    Jugador j1 = (Jugador) a;
+                    Jugador j2 = (Jugador) b;
+                    return j1.getNombre().compareTo(j2.getNombre());
+                }
+                else {
+                    // a es un jugador y b un escudo
+                    return 1;
+                }
+            }
+        }).collect(Collectors.toList());
+    }
+
+    /**
+     * Devuelve una lista de aquellos equipos de los cuales tengo todos sus jugadores,
+     * incluido el escudo
+     * @return
+     */
+    public List<String> equipoCompleto(){
+        List<String> equipos = new LinkedList<>();
+        // Primero obtengo los escudos, para despu�s ver si tengo todos sus jugadores.
+        Iterator<Cromo> it = mazo.keySet().stream().filter(c -> c instanceof Escudo).iterator();
+
+        // Por cada escudo, cuento los jugadores que tengo. Si los tengo todos, lo a�ado a la lista
+        while (it.hasNext()) {
+            Escudo escudo = (Escudo) it.next();
+            long jugadoresQueTengo = mazo.keySet().stream()
+                    .filter(c -> c instanceof Jugador)
+                    .filter(c -> ((Jugador) c).getEquipo().equals(escudo.getNombre()))
+                    .count();
+            if (jugadoresQueTengo == escudo.getNumeroJugadores()) {
+                equipos.add(escudo.getNombre());
+            }
+        }
+
+        return equipos;
+    }
+
+
+    /*
+
+    DESDE AQUI AL FINAL FUE LO QUE SE PUSO EN EL EXAMEN DE 2025 DE DRANGON BALL
+
+     */
+
+    /**
+     * Buscamos un personaje por su nombre y raza, para ello antes nos
+     * creamos un personaje a partir de lo pasado
+     *
+     * @param nombre
+     * @param raza
+     * @return personaje
+     * @throws DBException
+     */
+    public Personaje buscarPersonaje(String nombre, TRaza raza) throws DBException {
+        return this.personajes.stream()
+                .filter(p -> p.getNombre().equalsIgnoreCase(nombre) && p.getRaza() == raza)
+                .findFirst().orElseThrow(() -> new DBException("No existe un personaje con esos datos"));
+    }
+
+
+    /**
+     * Hacemos un método para añadir un personaje comprobando que no exista
+     *
+     * @param personaje
+     * @throws DBException
+     */
+    public void agregarPersonaje(Personaje personaje) throws DBException {
+        if (!personajes.add(personaje)) {
+            throw new DBException("El personaje ya existe");
+        }
+    }
+
+    /**
+     * Imprimimos los personajes que tienen más ataques, si hay varios con el
+     * valor máximo se coge también
+     *
+     * @throws DBException
+     */
+    public void personajeConMasAtaques() throws DBException {
+        int maxAtaques = this.personajes.stream().mapToInt(p -> p.getAtaques().size()).max().orElseThrow(() -> new DBException("No hay personajes"));
+        this.personajes.stream().filter(p -> p.getAtaques().size() == maxAtaques)
+                .forEach(personaje -> {
+                    System.out.println(personaje.getNombre() + ": " + personaje.getAtaques().size());
+                });
+    }
+
+    public void personajeConAtaqueMasPoderoso() throws DBException {
+        int maxDamage = this.personajes.stream().flatMap(p -> p.getAtaques().stream()).mapToInt(Ataque::getDamage).max().orElse(0);
+
+        this.personajes.stream().filter(p -> {
+                    Ataque a = p.getAtaqueMasPoderoso();
+                    return a != null && p.getAtaqueMasPoderoso().getDamage() == maxDamage;
+                })
+                .forEach(personaje -> {
+                    System.out.println(personaje.getNombre() + ": " + personaje.getAtaqueMasPoderoso());
+                });
+    }
+
+    /**
+     * Todos los ataques de los personajes ordenados por el nombre
+     */
+    public void todosLosAtaquesOrdenadosNombre() {
+        personajes.stream().flatMap(p -> p.getAtaques().stream()).distinct()
+                .sorted(Comparator.comparing(Ataque::getNombre))
+                .forEach(System.out::println);
+
+    }
+
+    /**
+     * Todos los ataques de los personajes ordenados por el daño
+     */
+    public void todosLosAtaquesOrdenadosDamage() {
+        personajes.stream().flatMap(p -> p.getAtaques().stream()).distinct()
+                .sorted(Comparator.comparingInt(Ataque::getDano).reversed())
+                .forEach(System.out::println);
+
+    }
+
+    /**
+     * Cogemos el ataque entre dos personajes el que más daño tenga, en caso
+     * de que haya ataques con el mismo daño, se coge cualquiera
+     *
+     * @param p1
+     * @param p2
+     * @return ataque con más daño
+     * @throws DBException
+     */
+    public Ataque ataqueMasDañino(Personaje p1, Personaje p2) throws DBException{
+        return p1.getAtaques().stream()
+                .filter(a -> a.getKiNecesario() <= p1.getKiActual())
+                .max(Comparator.comparing(Ataque::getDamage)).orElseThrow(() -> new DBException("No puede lanzar ningún ataque"));
+    }
+
+    public void atacar(Personaje p1, Personaje p2, String ataque) throws DBException {
+        if (p1.getVidaActual() <= 0){
+            throw new DBException("No puedes atacar con un personaje muerto");
+        }
+
+        if (p2.getVidaActual() <= 0){
+            throw new DBException("No puedes atacar a un personaje muerto");
+        }
+
+        try {
+            p1.atacar(p2, ataque);
+
+            /**
+             * Dentro de la clase personaje de ese examen habria que crea esto:
+             *
+             *
+             public void atacar(Personaje p2, String nombreAtaque) throws DBException {
+
+             //Primero buscamos el ataque. Puede haber varios, pero lo primero es filtrar por nombre y por ki necesario.
+             //Después seleccionamos el que más daño requiera
+
+            Ataque ataque = this.ataques.stream()
+                    .filter(a -> a.getNombre().equalsIgnoreCase(nombreAtaque) && a.getKiNecesario() <= this.getKiActual())
+                    .max(Comparator.comparing(Ataque::getDamage))
+                    .orElseThrow(() -> new DBException("No existe el ataque o no tiene suficiente Ki"));
+
+            if (p2.getVidaActual() - ataque.getDamage() > 0){
+                p2.setVidaActual(p2.getVidaActual() - ataque.getDamage());
+            }
+            else {
+                p2.setVidaActual(0);
+            }
+
+            this.ataques.remove(ataque);
+        }
+             */
+            if (p2.getVidaActual() == 0){
+                System.out.printf("%s ha muerto debido al ataque\n", p2.getNombre());
+            }
+            else{
+                System.out.printf("%s tiene %d puntos de vida tras el ataque", p2.getNombre(), p2.getVidaActual());
+            }
+        }
+        catch (DBException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Eliminamos los ataques que tengan un nivel menor al
+     * pasado por parámetros
+     *
+     * @param nivel
+     */
+    public void eliminarAtaquesInferioresANivel(int nivel) {
+        for (Personaje p : personajes) {
+            Iterator<Ataque> itAtaque = p.getAtaques().iterator();
+            while (itAtaque.hasNext()) {
+                Ataque ataque = itAtaque.next();
+                if (ataque.getNivelPerfeccion() < nivel) {
+                    itAtaque.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * Hacemos un mapa con las razas y las razas que pertenecen
+     * a esa raza
+     *
+     * @return mapa de razas
+     */
+    public Map<TRaza, List<Personaje>> devuelveMapaRazas() {
+        return personajes.stream().map(p -> Map.entry(p.getRaza(), p))
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+    }
+
+
+    /**
+     *
+     * Set: se divide en (SortedSet(TreeSet), HashSet y LinkedHashSet)
+     * List: se divide en (ArrayList, LinkedList)
+     * Queue: se divide en (PriorityQueue y LinkedList)
+     * Map: se divide en (SortedMap( TreeMap), HashMap, Hashtable y LinkedHashMap)
+     *
+     *
+     * Los Hash se debe de utilizar un equals y HashCode, ademas de añadir un toString en el codigo
+     * Si utilizas Comparable en el codigo, se debe de utilizar un compareTo
+     */
+
+
+
+
 }
