@@ -1,76 +1,75 @@
 package examen2023;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Jugador implements Comparable<Jugador> {
+public class Jugador implements Comparable<Jugador>{
     private String nombre;
+    private Posicion demarcacion;
     private LocalDate fechaNacimiento;
-    private Posicion posicion;
-    private String pais;
-    private int edad;
+    private String paisNacimiento;
 
-    public Jugador(String nombre, LocalDate fechaNacimiento, String posicion, String pais) {
-        assert nombre != null;
+
+    public Jugador(String nombre, Posicion demarcacion, LocalDate fechaNacimiento, String paisNacimiento) {
+        super();
         this.nombre = nombre;
+        this.demarcacion = demarcacion;
         this.fechaNacimiento = fechaNacimiento;
-        this.posicion = Posicion.valueOf(posicion.toUpperCase());
-        this.pais = pais;
-        calcularE();
-    }
-
-    private void calcularE(){
-        LocalDate fechaActual = LocalDate.now();
-        Period periodo = Period.between(fechaNacimiento, fechaActual);
-        edad = periodo.getYears();
+        this.paisNacimiento = paisNacimiento;
     }
 
     public String getNombre() {
         return nombre;
     }
 
+
+    public Posicion getDemarcacion() {
+        return demarcacion;
+    }
+
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public Posicion getPosicion() {
-        return posicion;
-    }
-
-    public String getPais() {
-        return pais;
-    }
-
-    public int getEdad() {
-        return edad;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Jugador jugador)) return false;
-        return Objects.equals(nombre, jugador.nombre) && Objects.equals(fechaNacimiento, jugador.fechaNacimiento) && posicion == jugador.posicion && Objects.equals(pais, jugador.pais);
+    public String getPaisNacimiento() {
+        return paisNacimiento;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nombre, fechaNacimiento, posicion, pais);
+        return Objects.hash(fechaNacimiento, nombre);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Jugador other = (Jugador) obj;
+        return Objects.equals(fechaNacimiento, other.fechaNacimiento) && Objects.equals(nombre, other.nombre);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(nombre).append(": ");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         sb.append(fechaNacimiento.format(formatter)).append(". ")
-                .append(posicion).append(" (").append(pais).append(")");
+                .append(demarcacion).append(" (").append(paisNacimiento).append(")");
 
         return sb.toString();
 
     }
 
     @Override
+    /**
+     * Elijo que el orden natural sea por fecha de nacimiento
+     */
     public int compareTo(Jugador o) {
-        return this.getNombre().compareTo(o.getNombre());
+        return this.fechaNacimiento.compareTo(o.fechaNacimiento);
     }
 }

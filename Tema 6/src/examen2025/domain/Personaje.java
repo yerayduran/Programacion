@@ -71,7 +71,9 @@ public class Personaje {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Personaje personaje)) return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Personaje personaje = (Personaje) o;
         return Objects.equals(nombre, personaje.nombre) && raza == personaje.raza;
     }
 
@@ -88,8 +90,6 @@ public class Personaje {
                 ", vida=" + vida +
                 ", ki=" + ki +
                 ", ataques=" + ataques +
-                ", vidaMax=" + vidaMax +
-                ", kiMax=" + kiMax +
                 '}';
     }
 }

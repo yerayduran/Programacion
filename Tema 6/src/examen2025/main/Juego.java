@@ -175,32 +175,27 @@ public class Juego {
     }
 
     public Ataque ataqueMasDañino(Personaje p1, Personaje p2) throws DBException{
-
         return p1.getAtaques().stream()
                 .filter(ataque -> ataque.getKiNecesario() <= p1.getKi()).max(Comparator.comparingInt(Ataque::getDaño))
                 .orElseThrow(() -> new DBException("No se puede encontrar dicho ataque mas dañino"));
+
     }
 
-    /**
-     * Por hacer
-     * @param p1
-     * @param p2
-     * @param ataque
-     * @throws DBException
-     */
-    /*public void atacar(Personaje p1, Personaje p2, String ataque) throws DBException {
-        if (p1.getVida() == 0 || p2.getVida() == 0){
-            throw new DBException("Uno de los dos esta muerto");
+
+    public void atacar(Personaje p1, Personaje p2, String ataque) throws DBException {
+        Ataque ataqueEncontrado = p1.getAtaques().stream()
+                .filter(ataque1 -> ataque1.getNombre().equalsIgnoreCase(ataque))
+                .findFirst()
+                .orElseThrow(() -> new DBException("Ataque no encontrado"));
+
+        if (ataqueEncontrado.getKiNecesario() > p1.getKi()) {
+            throw new DBException("Ki insuficiente");
         }
 
-        Ataque a = p1.getAtaques().stream().filter(a1 -> a1.getNombre().equalsIgnoreCase(ataque) && a1.getKiNecesario() <= p1.getKi())
-                .max((a1, a2) -> a1.getDaño() - a2.getDaño()).orElseThrow(() -> new DBException("Ataque no se puede lanzar"));
-
-
 
     }
 
-     */
+
 
     public void eliminarAtaquesInferioresANivel(int nivel){
         for(Personaje personaje : personajes){

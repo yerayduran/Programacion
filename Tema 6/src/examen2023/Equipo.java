@@ -1,39 +1,54 @@
 package examen2023;
-
-
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Equipo {
-
     private String nombre;
     private Set<Jugador> jugadores;
 
     public Equipo(String nombre) {
+        super();
         this.nombre = nombre;
         this.jugadores = new HashSet<>();
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void addJugador(Jugador j) {
+        this.jugadores.add(j);
     }
 
     public Set<Jugador> getJugadores() {
         return jugadores;
     }
 
-    public void setJugadores(Set<Jugador> jugadores){
-        this.jugadores = jugadores;
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre);
     }
 
-    public void añadirJugador(Jugador jugador) throws LigaException {
-        if (!jugadores.add(jugador)) {
-            throw new LigaException("Este Jugador ya esta en el equipo");
-        }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Equipo other = (Equipo) obj;
+        return Objects.equals(nombre, other.nombre);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(nombre).append(": ").append(System.lineSeparator());
+        for (Jugador j: jugadores) {
+            sb.append(j).append(System.lineSeparator());
+        }
+
+        return sb.toString();
+    }
+
+
 
 }
+

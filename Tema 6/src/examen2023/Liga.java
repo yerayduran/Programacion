@@ -1,97 +1,92 @@
 package examen2023;
-
-
-import java.util.*;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Liga {
-
-    private String nombreLiga;
     private List<Equipo> equipos;
+    private String nombre;
 
-    public Liga(String nombreLiga) {
-        this.nombreLiga = nombreLiga;
+    public Liga(String nombre) {
+        super();
         this.equipos = new ArrayList<>();
+        this.nombre = nombre;
     }
 
-    public String getNombreLiga() {
-        return nombreLiga;
-    }
-
-    public List<Equipo> getEquipos() {
-        return equipos;
-    }
-
-    public void setEquipos(List<Equipo> equipos) {
-        this.equipos = equipos;
-    }
-
-    public void anadirEquipo(Equipo equipo) throws LigaException {
-        if (equipo.getJugadores().isEmpty()) {
-            throw new LigaException("El equipo no contiene jugadores.");
+    public int addEquipo(Equipo e) throws LigaException {
+        if (e.getJugadores().size() == 0) {
+            throw new LigaException("No puedes añadir un equipo vacío");
         }
-        if (equipos.contains(equipo)) {
-            throw new LigaException("El equipo ya forma parte de la liga.");
-        }
-        equipos.add(equipo);
-    }
 
-    public void eliminarEquipo(Equipo equipo) throws LigaException {
-        if (!equipos.remove(equipo)) {
-            throw new LigaException("El equipo no forma parte de la liga.");
-        }
-    }
-
-    public void unirEquipos(Equipo equipo1, Equipo equipo2) throws LigaException {
-        if (equipos.contains(equipo1) && equipos.contains(equipo2)) {
-            Set<Jugador> nuevoJugadores = new HashSet<>(equipo1.getJugadores());
-            nuevoJugadores.addAll(equipo2.getJugadores());
-            equipo1.setJugadores(nuevoJugadores);
+        if (!equipos.contains(e)) {
+            equipos.add(e);
+            return equipos.size();
         }
         else {
-            throw new LigaException("Uno de estos dos equipos no esta en la liga");
+            throw new LigaException("El equipo ya se había añadido");
         }
+
     }
 
-    public String jugadoresEnComun(Equipo e1, Equipo e2) throws LigaException {
+    public int eliminaEquipo(Equipo e) throws LigaException {
+        if (!equipos.contains(e)) {
+            throw new LigaException("El equipo que buscas no juega en esta liga");
+        }
+
+        equipos.remove(e);
+        return equipos.size();
+    }
+
+
+    public void unirEquipos(Equipo e1, Equipo e2) throws LigaException {
         if (equipos.contains(e1) && equipos.contains(e2)) {
-            return e1.getJugadores().stream()
-                    .filter(e2.getJugadores()::contains)
-                    .map(Jugador::getNombre)
-                    .collect(Collectors.joining(", "));
+            e1.getJugadores().addAll(e2.getJugadores());
         }
         else {
-            throw new LigaException("Uno de estos dos equipos ya esta en la liga");
+            throw new LigaException("Los dos equipos deben pertenecer a la liga");
+        }
+    }
+
+    public List<Jugador> jugadoresEnComun(Equipo e1, Equipo e2) throws LigaException {
+        if (equipos.contains(e1) && equipos.contains(e2)) {
+            return e1.getJugadores().stream().filter(e2.getJugadores()::contains).toList();
+        }
+        else {
+            throw new LigaException("Los equipos indicados no juegan en esta liga");
         }
     }
 
     public double mediaEdad() throws LigaException {
-        return todosLosJugadores().stream().mapToDouble(Jugador::getEdad)
-                .average().orElseThrow(()  -> new LigaException("No se puede cargar la edad media"));
+
+
+        LocalDate fechaActual = LocalDate.now();
+
+        return todosLosJugadores().stream().mapToDouble(j -> {
+            Period periodo = Period.between(j.getFechaNacimiento(), fechaActual);
+            return periodo.getYears();
+        }).average().orElseThrow(() -> new LigaException("No hay jugadores en la liga"));
     }
 
-    public List<Jugador> jugadoresOrdenadosEdad(List<Jugador> jugadores) {
-        return jugadores.stream()
-                .sorted(Comparator.comparing(Jugador::getEdad)
-                        .reversed())
-
-                .toList();
+    public List<Jugador> jugadoresOrdenadosEdad() {
+        return todosLosJugadores().stream().sorted().toList();
     }
 
-    public List<Jugador> jugadoresOrdenadosNombre(List<Jugador> jugadores){
-        return jugadores.stream()
-                .sorted()
-                .toList();
-
+    public List<Jugador> jugadoresOrdenadosNombre() {
+        return todosLosJugadores().stream().sorted((j1, j2) -> j1.getNombre().compareTo(j2.getNombre())).toList();
     }
 
     public Set<Jugador> todosLosJugadores() {
-        return equipos.stream().flatMap(equipo -> equipo.getJugadores().stream()).collect(Collectors.toSet());
+        Set<Jugador> todosLosJugadores = new HashSet<>();
+        equipos.stream().forEach(e -> todosLosJugadores.addAll(e.getJugadores()));
+        return todosLosJugadores;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Bienvenidos a " + nombreLiga).append(System.lineSeparator());
+        StringBuilder sb = new StringBuilder("Bienvenidos a " + nombre).append(System.lineSeparator());
         sb.append("Equipos: ").append(System.lineSeparator());
         for (Equipo e: equipos) {
             sb.append(e).append(System.lineSeparator());
