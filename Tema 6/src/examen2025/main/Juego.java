@@ -1,15 +1,14 @@
 package examen2025.main;
 
+
 import examen2025.domain.Ataque;
 import examen2025.domain.Personaje;
 import examen2025.domain.TRaza;
 import examen2025.exceptions.DBException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Juego {
-
     private Set<Personaje> personajes;
 
     public Juego() {
@@ -25,9 +24,9 @@ public class Juego {
             // Llamada al método que muestra los personajes con más ataques
             System.out.println("Personaje(s) que conocen más ataques:");
             juego.personajeConMasAtaques();
-            // System.out.println();
-            // System.out.println("Personaje(s) con el ataque más poderoso:");
-            //juego.personajeConAtaqueMasPoderoso();
+            System.out.println();
+            System.out.println("Personaje(s) con el ataque más poderoso:");
+            juego.personajeConAtaqueMasPoderoso();
             System.out.println();
             System.out.println("Ataques ordenados por nombre");
             juego.todosLosAtaquesOrdenadosNombre();
@@ -47,9 +46,9 @@ public class Juego {
             System.out.println("Gohan ataca a " + android18.getNombre());
             juego.atacar(gohan, android18, "Special Beam Cannon");
 
-            System.out.println();
+            /*System.out.println();
             System.out.println(android18.getNombre() + " intenta atacar a Gohan");
-            juego.atacar(android18, gohan, "energy blast");
+            juego.atacar(android18, gohan, "energy blast");*/
 
             System.out.println();
             System.out.println("Todos los ataques restantes de todos los jugadores:");
@@ -74,9 +73,6 @@ public class Juego {
             System.out.println(e.getMessage());
         }
     }
-
-
-
 
     public static void crearPersonajes(Juego juego) throws DBException {
         Personaje goku = new Personaje("Goku", TRaza.SAIYAN, 100, 100, 100, 10);
@@ -111,7 +107,7 @@ public class Juego {
         Ataque finalAttack = new Ataque("Final Attack", 20, 3, 50);
         gohan.addAtaque(masenko1);
         gohan.addAtaque(masenko2);
-        gohan.addAtaque(masenko3);
+        //gohan.addAtaque(masenko3);
         gohan.addAtaque(specialBeamCannon);
         gohan.addAtaque(finalAttack);
 
@@ -136,86 +132,116 @@ public class Juego {
     }
 
     public Personaje buscarPersonaje(String nombre, TRaza raza) throws DBException {
-        return personajes.stream()
-                .filter(personaje -> personaje.getNombre().equals(nombre) && personaje.getRaza() == raza)
-                .findFirst()
-                .orElseThrow(() -> new DBException("Personaje no encontrado"));
+        return this.personajes.stream()
+                .filter(p -> p.getNombre().equalsIgnoreCase(nombre) && p.getRaza() == raza)
+                .findFirst().orElseThrow(() -> new DBException("No existe un personaje con esos datos"));
     }
 
 
-    public void agregarPersonaje(Personaje personaje) throws DBException{
-        if (!personajes.add(personaje)) {
-            throw new DBException("Personaje ya existe");
+    public void agregarPersonaje(Personaje personaje) throws DBException {
+        if (!this.personajes.add(personaje)){
+            throw new DBException("El personaje ya existe");
         }
     }
 
     public void personajeConMasAtaques() throws DBException {
-        personajes.stream()
-                .filter(personaje -> personaje.getAtaques().size() == personajes.stream()
-                        .mapToInt(personaje1 -> personaje1.getAtaques().size())
-                        .max().orElse(0))
-                .map(personaje -> personaje.getNombre() + " Ataques: " + personaje.getAtaques().size())
-                .forEach(System.out::println);
+       /*
+        Aquí podríamos optar por dos opciones:
+        1. Calcular cuál es el número máximo de ataques que uno o varios personajes tienen y luego filtrar por aquellos que tengan ese número de ataques.
+        2. Ordenar la lista de personajes por la cantidad de ataques que tienen y recorrerla hasta encontrar el primer personaje cuyo número de ataques
+        se diferencie del primer personaje de la lista.
+         */
+        /* Opción 1 */
+        /*int maxAtaques = this.personajes.stream().mapToInt(p -> p.getAtaques().size()).max().orElseThrow(() -> new DBException("No hay personajes"));
+        this.personajes.stream().filter(p -> p.getAtaques().size() == maxAtaques)
+                .forEach(personaje -> {
+                    System.out.println(personaje.getNombre() + ": " + personaje.getAtaques().size());
+                });*/
+
+        /* Opción 2 */
+        List<Personaje> nuevaLista = this.personajes.stream()
+                .sorted((p1, p2) -> p2.getAtaques().size() - p1.getAtaques().size())
+                .toList();
+        if (nuevaLista.isEmpty()){
+            throw new DBException("No hay personajes");
+        }
+        int maxAtaques2 = nuevaLista.getFirst().getAtaques().size();
+        for (Personaje personaje : nuevaLista) {
+            if (personaje.getAtaques().size() != maxAtaques2) {
+                break;
+            }
+            System.out.println(personaje.getNombre() + ": " + personaje.getAtaques().size());
+        }
+
+    }
+
+    public void personajeConAtaqueMasPoderoso() throws DBException {
+        int maxDamage = this.personajes.stream().flatMap(p -> p.getAtaques().stream()).mapToInt(Ataque::getDamage).max().orElse(0);
+
+        this.personajes.stream().filter(p -> {
+                    Ataque a = p.getAtaqueMasPoderoso();
+                    return a != null && p.getAtaqueMasPoderoso().getDamage() == maxDamage;
+                })
+                .forEach(personaje -> {
+                    System.out.println(personaje.getNombre() + ": " + personaje.getAtaqueMasPoderoso());
+                });
     }
 
     public void todosLosAtaquesOrdenadosNombre() {
-        personajes.stream()
-                .flatMap(personaje -> personaje.getAtaques().stream())
-                .distinct()
+        this.personajes.stream().flatMap(p -> p.getAtaques().stream()).distinct()
                 .sorted(Comparator.comparing(Ataque::getNombre))
                 .forEach(System.out::println);
     }
 
     public void todosLosAtaquesOrdenadosDamage() {
-        personajes.stream().flatMap(personaje -> personaje.getAtaques().stream())
-                .distinct()
-                .sorted(Comparator.comparingInt(Ataque::getDaño).reversed())
+        this.personajes.stream().flatMap(p -> p.getAtaques().stream()).distinct()
+                .sorted(Comparator.comparing(Ataque::getDamage).reversed())
                 .forEach(System.out::println);
-
     }
 
     public Ataque ataqueMasDañino(Personaje p1, Personaje p2) throws DBException{
         return p1.getAtaques().stream()
-                .filter(ataque -> ataque.getKiNecesario() <= p1.getKi()).max(Comparator.comparingInt(Ataque::getDaño))
-                .orElseThrow(() -> new DBException("No se puede encontrar dicho ataque mas dañino"));
-
+                .filter(a -> a.getKiNecesario() <= p1.getKiActual())
+                .max(Comparator.comparing(Ataque::getDamage)).orElseThrow(() -> new DBException("No puede lanzar ningún ataque"));
     }
-
 
     public void atacar(Personaje p1, Personaje p2, String ataque) throws DBException {
-        Ataque ataqueEncontrado = p1.getAtaques().stream()
-                .filter(ataque1 -> ataque1.getNombre().equalsIgnoreCase(ataque))
-                .findFirst()
-                .orElseThrow(() -> new DBException("Ataque no encontrado"));
-
-        if (ataqueEncontrado.getKiNecesario() > p1.getKi()) {
-            throw new DBException("Ki insuficiente");
+        if (p1.getVidaActual() <= 0){
+            throw new DBException("No puedes atacar con un personaje muerto");
         }
 
+        if (p2.getVidaActual() <= 0){
+            throw new DBException("No puedes atacar a un personaje muerto");
+        }
 
+        try {
+            p1.atacar(p2, ataque);
+            if (p2.getVidaActual() == 0){
+                System.out.printf("%s ha muerto debido al ataque\n", p2.getNombre());
+            }
+            else{
+                System.out.printf("%s tiene %d puntos de vida tras el ataque", p2.getNombre(), p2.getVidaActual());
+            }
+        }
+        catch (DBException e){
+            System.out.println(e.getMessage());
+        }
     }
 
-
-
     public void eliminarAtaquesInferioresANivel(int nivel){
-        for(Personaje personaje : personajes){
-            Iterator<Ataque> itAtaque = personaje.getAtaques().iterator();
-            while (itAtaque.hasNext()){
-                Ataque ataque = itAtaque.next();
-                if (ataque.getNivelPerfeccion() < nivel){
-                    itAtaque.remove();
-                }
-            }
+        for(Personaje p: this.personajes){
+            p.eliminarAtaquesConNivelInferiorA(nivel);
         }
     }
 
     public Map<TRaza, List<Personaje>> devuelveMapaRazas(){
-        return Arrays.stream(TRaza.values()).map(raza -> Map.entry(raza,
-                personajes.stream().filter(personaje -> personaje.getRaza() == raza).toList()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        //Se puede hacer con un único flujo (más difícil) o creando un mapa y rellenándolo al recorrer
+        Map<TRaza, List<Personaje>> mapaPersonajes = new HashMap<>();
+        for(TRaza tRaza: TRaza.values()){
+            mapaPersonajes.put(tRaza, this.personajes.stream().filter(p -> p.getRaza() == tRaza).toList());
+        }
 
+        return mapaPersonajes;
     }
-
-
 
 }

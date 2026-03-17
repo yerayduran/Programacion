@@ -1,76 +1,83 @@
 package examen2025.domain;
-
 import examen2025.exceptions.DBException;
 
-import java.util.Objects;
-
-public class Ataque implements Comparable<Ataque> {
-
+public class Ataque {
     private String nombre;
     private int kiNecesario;
-    private int nivelPerfeccion;
-    private int daño;
+    private int nivel;
+    private int damage;
 
-
-    public Ataque(String nombre, int kiNecesario, int nivelPerfeccion, int daño) throws DBException {
+    public Ataque(String nombre, int kiNecesario, int nivel, int damage) throws DBException {
         this.nombre = nombre;
-        this.kiNecesario = kiNecesario;
-        setNivelPerfeccion(nivelPerfeccion);
-        setDaño(daño);
+        this.setKiNecesario(kiNecesario);
+        this.setNivel(nivel);
+        this.setDamage(damage);
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    public int getNivelPerfeccion() {
-        return nivelPerfeccion;
-    }
-
-    public void setNivelPerfeccion(int nivelPerfeccion) throws DBException {
-        if (nivelPerfeccion < 1 || nivelPerfeccion > 3) {
-            throw new DBException("El nivel de perfección no es válido");
-        }
-        this.nivelPerfeccion = nivelPerfeccion;
-    }
-
-    public int getDaño() {
-        return daño;
-    }
-
-    public void setDaño(int daño) throws DBException {
-        if (daño < 1) {
-            throw new DBException("El daño no es válido");
-        }
-        this.daño = daño;
-    }
-
     public int getKiNecesario() {
         return kiNecesario;
+    }
+
+    public void setKiNecesario(int kiNecesario) throws DBException {
+        // El ki debe ser mayor que 0
+        if (kiNecesario <= 0) {
+            throw new DBException("El ki debe ser mayor que 0");
+        }
+        this.kiNecesario = kiNecesario;
+    }
+
+    public void setNivel(int nivel) throws DBException {
+        //Nivel debe estar entre 1 y 3
+        if (nivel < 1 || nivel > 3) {
+            throw new DBException("El nivel debe estar entre 1 y 3");
+        }
+        this.nivel = nivel;
+    }
+
+    public void setDamage(int damage) throws DBException {
+        // El daño debe ser mayor que 0
+        if (damage <= 0) {
+            throw new DBException("El daño debe ser mayor que 0");
+        }
+        this.damage = damage;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getNivel() {
+        return nivel;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Ataque ataque = (Ataque) o;
-        return nivelPerfeccion == ataque.nivelPerfeccion && daño == ataque.daño && Objects.equals(nombre, ataque.nombre);
+        return nivel == ataque.nivel && damage == ataque.damage && nombre.equals(ataque.nombre);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nombre, nivelPerfeccion, daño);
+        int result = nombre.hashCode();
+        result = 31 * result + nivel;
+        result = 31 * result + damage;
+        return result;
     }
-
 
     @Override
     public String toString() {
-        return String.format("Nombre: %s, Ki necesario: %d, Nivel perfección: %d, Daño: %d", this.nombre, this.kiNecesario,
-                this.nivelPerfeccion, this.daño);
-    }
-
-    @Override
-    public int compareTo(Ataque o) {
-        return this.nombre.compareTo(o.nombre);
+        return "Ataque{" +
+                "nombre='" + nombre + '\'' +
+                ", kiNecesario=" + kiNecesario +
+                ", nivel=" + nivel +
+                ", damage=" + damage +
+                '}';
     }
 }
