@@ -1,21 +1,30 @@
 package examen2022.domain;
-
 public class Escudo extends Cromo {
+    private int fundacion, numeroJugadores;
 
-    private int añoFundado;
-    private int numDeJugadores;
 
-    public Escudo(int id, String nombre, int añoFundado, int numDeJugadores) {
+    public Escudo(int id, String nombre, int fundacion, int numeroJugadores) {
         super(id, nombre);
-        this.añoFundado = añoFundado;
-        this.numDeJugadores = numDeJugadores;
+        this.fundacion = fundacion;
+        this.numeroJugadores = numeroJugadores;
     }
 
-    public int getAñoFundado() {
-        return añoFundado;
+
+    /**
+     * @return the fundacion
+     */
+    public int getFundacion() {
+        return fundacion;
     }
 
-    public int getNumDeJugadores() {
-        return numDeJugadores;
+
+    /**
+     * @return the numeroJugadores
+     */
+    public int getNumeroJugadores() {
+        return numeroJugadores;
     }
+
+
+
 }

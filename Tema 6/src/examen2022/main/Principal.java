@@ -167,16 +167,12 @@ public class Principal {
      * @return El cromo correspondiente
      */
     private static Cromo get(String nombre) throws MazoException {
-        Iterator<Cromo> it = todos.iterator();
-
-        while (it.hasNext()) {
-            Cromo c = it.next();
-            if (c.getNombre().equals(nombre)) {
+        for (Cromo c : todos) {
+            if (c.getNombre().equalsIgnoreCase(nombre)) {
                 return c;
             }
         }
-
-        throw new MazoException("El nombre dado no existe");
+        throw new MazoException("No se ha encontrado el cromo");
     }
 
 }

@@ -2,20 +2,30 @@ package examen2022.domain;
 
 public class Jugador extends Cromo {
 
-    private String equipoQueJuega;
+    private String equipo;
     private int altura;
 
-    public Jugador(int id, String nombre, String equipoQueJuega, int altura) {
+    public Jugador(int id, String nombre, String equipo, int altura) {
         super(id, nombre);
-        this.equipoQueJuega = equipoQueJuega;
+        this.equipo = equipo;
         this.altura = altura;
     }
 
-    public String getEquipoQueJuega() {
-        return equipoQueJuega;
+
+
+    /**
+     * @return the equipo
+     */
+    public String getEquipo() {
+        return equipo;
     }
 
+    /**
+     * @return the altura
+     */
     public int getAltura() {
         return altura;
     }
+
+
 }
