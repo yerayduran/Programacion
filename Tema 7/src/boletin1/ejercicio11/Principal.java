@@ -1,104 +1,63 @@
 package boletin1.ejercicio11;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Principal {
-
-    public static void main(String[] args) {
+    static void main(String[] args) {
         try {
-            crearEstructuraDirectoriosYCarpetasAlumnos();
+            crearDirectorios();
         } catch (Ejercicio11Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            System.out.printf("%s \n",e.getMessage());
         }
     }
 
-    /**
-     * Crea una carpeta por cada curso y dentro una carpeta por cada alumno
-     * con el nombre Apellido1Apellido2Nombre.
-     * Si se detecta algún error en el formato del fichero, se detiene el proceso.
-     *
-     * @throws Ejercicio11Exception si hay error de formato o I/O
-     */
-    public static void crearEstructuraDirectoriosYCarpetasAlumnos() throws Ejercicio11Exception {
-        Pattern patronCurso   = Pattern.compile("^[1-4]º[A-Z]{3,}$");
-        Pattern patronNombre  = Pattern.compile("^\\p{Lu}\\p{Ll}+\\s+\\p{Lu}\\p{Ll}+\\s+\\p{Lu}\\p{Ll}+\\s+[1-4]º[A-Z]{3,}$");
+    public static void crearDirectorios() throws Ejercicio11Exception {
 
-        Path rutaFichero;
-        try {
-            rutaFichero = Path.of("./boletin1/ejercicio11/alumnos.txt");
-        } catch (InvalidPathException e) {
-            throw new Ejercicio11Exception("Ruta del fichero inválida: " + e.getMessage());
+        Pattern patron = Pattern.compile("^(?<nombre>\\p{Lu}\\p{Ll}+)\\s(?<apellido1>\\p{Lu}\\p{Ll}+)\\s(?<apellido2>\\p{Lu}\\p{Ll}+)\\s(?<curso>[1-6]º[A-Z]+)$");
+
+        Path rutaArchivoContenido = Path.of("./src/boletin1/ejercicio11/alumnos.txt");
+
+        if (Files.notExists(rutaArchivoContenido) || !Files.isRegularFile(rutaArchivoContenido) || !Files.isReadable(rutaArchivoContenido)){
+            throw new Ejercicio11Exception("Moisés friki galaxy, la película (No es posible acceder al archivo, o no es un archivo de texto o no se puede leer)");
         }
 
-        try (BufferedReader br = Files.newBufferedReader(rutaFichero)) {
-            Map<String, List<String>> cursos = br.lines()
-                    .map(String::trim)
-                    .filter(linea -> !linea.isEmpty())
-                    .peek(linea -> {
-                        Matcher m = patronNombre.matcher(linea);
-                        if (!m.matches()) {
-                            throw new RuntimeException("Formato de línea inválida: " + linea);
-                        }
-                    })
-                    .map(linea -> linea.split("\\s+"))
-                    .collect(Collectors.groupingBy(
-                            partes -> partes[3],
-                            Collectors.mapping(partes -> partes[0] + partes[1] + partes[2],
-                                    Collectors.toList()
-                            )
-                    ));
+        boolean todasLasLineasCumplenElFormato = false;
 
-            // Crear una carpeta por cada curso
-            for (Map.Entry<String, List<String>> entrada : cursos.entrySet()) {
-                String curso = entrada.getKey();
-                List<String> nombres = entrada.getValue();
+        try(Stream<String> lineas = Files.lines(rutaArchivoContenido)){
+            todasLasLineasCumplenElFormato = lineas.allMatch(l -> l.matches(patron.pattern()));
+        }catch (IOException e){
+            System.out.printf("%s \n",e.getMessage());
+        }
 
-                // Validar curso
-                Matcher matcherCurso = patronCurso.matcher(curso);
-                if (!matcherCurso.matches()) {
-                    throw new Ejercicio11Exception("Nombre de curso no válido: " + curso);
-                }
+        if (!todasLasLineasCumplenElFormato){
+            throw new Ejercicio11Exception("El archivo no cumple el patrón");
+        }
 
-                Path raiz = rutaFichero.getParent();
-                Path dirCurso = raiz.resolve(curso);
+        try(Stream<String> lineas = Files.lines(rutaArchivoContenido)){
+            lineas.map(patron::matcher)
+                    .filter(Matcher::find)
+                    .forEach(m -> {
+                        String nombre = m.group("nombre");
+                        String apellido1 = m.group("apellido1");
+                        String apellido2 = m.group("apellido2");
+                        String curso = m.group("curso");
 
-                if (!Files.exists(dirCurso)) {
-                    try {
-                        Files.createDirectory(dirCurso);
-                    } catch (IOException e) {
-                        throw new Ejercicio11Exception("No se pudo crear el directorio del curso '" + curso + "': " + e.getMessage());
-                    }
-                }
-
-                // Crear carpeta por cada alumno dentro del curso
-                for (String nombre : nombres) {
-                    Path carpetaAlumno = dirCurso.resolve(nombre);
-                    if (!Files.exists(carpetaAlumno)) {
                         try {
-                            Files.createDirectory(carpetaAlumno);
+                            Files.createDirectories(Path.of("./src/boletin1/salida",curso,apellido1+apellido2+nombre));
                         } catch (IOException e) {
-                            throw new Ejercicio11Exception(
-                                    "No se pudo crear la carpeta del alumno '" + nombre + "': " + e.getMessage()
-                            );
+                            System.out.printf("%s \n", e.getMessage());
                         }
-                    }
-                }
-            }
-
-        } catch (IOException e) {
-            throw new Ejercicio11Exception("Error al leer el fichero: " + e.getMessage());
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof Ejercicio11Exception) {
-                throw (Ejercicio11Exception) e.getCause();
-            } else {
-                throw new Ejercicio11Exception("Formato de línea incorrecto en el fichero: " + e.getMessage());
-            }
+                    });
+        }catch (IOException e){
+            System.out.printf("%s \n",e.getMessage());
         }
+
     }
+
+
 }
