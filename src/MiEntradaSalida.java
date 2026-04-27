@@ -332,7 +332,7 @@ public class MiEntradaSalida {
     Metodo para crear un archivo
      */
     public static void crearArchivo() {
-        Path emptyFile = Paths.get("./ejemplos_de_clase/java_nio/emptyFile.txt");
+        Path emptyFile = Paths.get("src/main/resources/nombre_de_fichero.txt");
         if (Files.notExists(emptyFile)) {
             try {
                 emptyFile = Files.createFile(emptyFile);
@@ -352,7 +352,7 @@ public class MiEntradaSalida {
     Lee un fichero y la convierte en una cadena
      */
     public static void ficheroTexto(){
-        Path path = Paths.get("./ejemplos_de_clase/java_nio/fichero.txt");
+        Path path = Paths.get("src/main/resources/nombre_de_fichero.txt");
 
         String content = null;
         try {
@@ -381,5 +381,25 @@ public class MiEntradaSalida {
         }catch (IOException e){
             System.out.println("No se puede acceder a la ruta: " + e.getMessage());
         }
+    }
+
+
+    /*
+    exportar lista a un archivo JSON en un destino
+     */
+    public static void exportarAJson(List<Persona> personas, Path destino) {
+
+        // Configuramos Gson para que el JSON salga con saltos de línea y tabulaciones
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        String json = gson.toJson(personas);
+
+        try {
+            Files.writeString(destino, json);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+
     }
 }
