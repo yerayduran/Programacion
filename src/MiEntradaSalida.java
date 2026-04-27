@@ -382,4 +382,24 @@ public class MiEntradaSalida {
             System.out.println("No se puede acceder a la ruta: " + e.getMessage());
         }
     }
+
+
+    /*
+    exportar lista a un archivo JSON en un destino
+     */
+    public static void exportarAJson(List<Persona> personas, Path destino) {
+
+        // Configuramos Gson para que el JSON salga con saltos de línea y tabulaciones
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        String json = gson.toJson(personas);
+
+        try {
+            Files.writeString(destino, json);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+    }
 }
