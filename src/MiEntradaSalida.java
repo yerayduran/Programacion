@@ -3,6 +3,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Scanner;
@@ -327,11 +328,7 @@ public class MiEntradaSalida {
         return texto.charAt(0);
     }
 
-
-    /*
-    Metodo para crear un archivo
-     */
-    public static void crearArchivo() {
+    private static void crearFichero() {
         Path emptyFile = Paths.get("./ejemplos_de_clase/java_nio/emptyFile.txt");
         if (Files.notExists(emptyFile)) {
             try {
@@ -348,10 +345,7 @@ public class MiEntradaSalida {
 
     }
 
-    /*
-    Lee un fichero y la convierte en una cadena
-     */
-    public static void ficheroTexto(){
+    private static void deFicheroACadena() {
         Path path = Paths.get("./ejemplos_de_clase/java_nio/fichero.txt");
 
         String content = null;
@@ -364,39 +358,63 @@ public class MiEntradaSalida {
         }
 
         System.out.println(content);
+
+
     }
 
-    // boolean esDni = MiEntradaSalida.validarConRegex(dni, REGEX_DNI_8_DIGITOS); para el codigo principal
+    /*
+    Este código calcula el tamaño total en bytes de todos los archivos dentro de un directorio dado y también cuenta cuántos archivos hay en ese directorio (incluyendo los de subdirectorios).
+     */
+    private static void directorySize() {
+        Path directorio = Paths.get("/home/jose");
+        if (Files.exists(directorio) && Files.isDirectory(directorio)) {
+            try {
+                long size = Files.walk(directorio).parallel()
+                        .filter(p -> p.toFile().isFile())
+                        .mapToLong(p -> p.toFile().length()).sum();
+                System.out.println("Tamaño en bytes del directorio: " + size);
 
-    public static boolean validarConRegex(String texto, String regex) {
-        return texto != null && texto.matches(regex);
+                long count = Files.walk(directorio).parallel().filter(p -> !p.toFile().isDirectory()).count();
+                System.out.println("Total de ficheros: " + count);
+            }
+            catch (IOException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+        else {
+            System.out.println("El directorio no existe.");
+        }
+
     }
 
+    private static void escribirAFichero() {
+        Path ficheroSalida = Paths.get("./ejemplos_de_clase/java_nio/ficheroAEscribir.txt");
 
-    public static void mostrarArchivosEnCarpeta(String nombreCarpeta) {
-        Path rutaAbsoluta = Path.of(nombreCarpeta).toAbsolutePath().normalize();
+        String text = "Esto es una cadena de prueba con tíldes mal puestas y eñes.";
+        try {
+            // Escribe al fichero. Si no existe se creará. Si tiene contenido, se truncará.
+            Files.write(ficheroSalida, text.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-        try (Stream<Path> listaDeArchivos = Files.list(rutaAbsoluta)) {
-            listaDeArchivos.forEach(p -> System.out.println(p.getFileName()));
-        }catch (IOException e){
-            System.out.println("No se puede acceder a la ruta: " + e.getMessage());
+			/*
+			 * La línea anterior truncará el fichero si existe. Para añadir el texto al archivo:
+			 * Files.write(ficheroSalida, text.getBytes(StandardCharsets.UTF_8),
+			        StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+			 */
+
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
+    private static void lecturaLineaALinea() {
+        Path path = Paths.get("./ejemplos_de_clase/java_nio/fichero.txt");
+        try (Stream<String> stream = Files.lines(path)) {
 
-    /*
-    exportar lista a un archivo JSON en un destino
-     */
-    public static void exportarAJson(List<Persona> personas, Path destino) {
-
-        // Configuramos Gson para que el JSON salga con saltos de línea y tabulaciones
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        String json = gson.toJson(personas);
-
-        try {
-            Files.writeString(destino, json);
-        } catch (IOException e) {
+            stream.forEach( s ->System.out.println(s));
+        }
+        catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
