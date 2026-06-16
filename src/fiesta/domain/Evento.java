@@ -1,0 +1,5 @@
+package fiesta.domain;
+
+public enum Evento {
+    CORTE_TARTA,MUSICA_ALTA,MUSICA_BAJA,CHARLITA_COLOQUIAL,BAILE,PIÑATA,APERTURA_REGALOS
+}
